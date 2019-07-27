@@ -1,8 +1,8 @@
 import {
-  JupyterFrontEnd, JupyterFrontEndPlugin
+  JupyterFrontEnd, JupyterFrontEndPlugin, ILayoutRestorer
 } from '@jupyterlab/application';
 import {
-  ICommandPalette, MainAreaWidget
+  ICommandPalette, MainAreaWidget, WidgetTracker
 } from '@jupyterlab/apputils';
 import{
   Widget
@@ -63,30 +63,53 @@ class APODWidget extends Widget {
   }
 }
 
-function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
-  console.log('JupyterLab extension Collapsible_Headings is activated! v6');
-  const content = new APODWidget();
-  content.addClass('my-apodWidget');
+function activate(app: JupyterFrontEnd, palette: ICommandPalette,
+                  restorer: ILayoutRestorer) {
+  console.log('JupyterLab extension Collapsible_Headings is activated! v8');
+  let widget: MainAreaWidget<APODWidget>;
+  //const content = new APODWidget();
+  //content.addClass('my-apodWidget');
   const command: string = 'Collapsible_Headings:open'
   app.commands.addCommand(command, {
     label: 'Random Astronomy Picture',
     execute: () => {
-      const widget = new MainAreaWidget({content});
-      widget.id = 'Collapsible_Headings';
-      widget.title.label = 'Astronomy Picture';
-      widget.title.closable = true;
+      if (!widget){
+        const content = new APODWidget();
+        widget = new MainAreaWidget({content});
+        widget.id = 'Collapsible_Headings';
+        widget.title.label = 'Astronomy Picture';
+        widget.title.closable = true;
+      }
+      if (widget.disposed)
+      {
+        const content = new APODWidget();
+        widget = new MainAreaWidget({content});
+        widget.id = 'Collapsible_Headings';
+        widget.title.label = 'Astronomy Picture';
+        widget.title.closable = true;
+      }
 
+      if (!tracker.has(widget)){
+        // track the state of the widget for later restoration
+        tracker.add(widget);
+      }
       if (!widget.isAttached) {
-        console.log('Widget was Unattached, attaching.');
         // attach the widget to the main work area if it's not already there
         app.shell.add(widget, 'main');
       }
-      console.log('Activating Widget');
+      widget.content.update();
       app.shell.activateById(widget.id);
     }
   });
   palette.addItem({command, category:'Tutorial'});
-  console.log('Artorias!');
+  let tracker = new WidgetTracker<MainAreaWidget<APODWidget>>({
+    namespace: 'apod'
+  });
+  restorer.restore(tracker, {
+    command,
+    name: () => 'apod'
+  });
+  console.log('For Artorias!');
 }
 
 
@@ -105,7 +128,7 @@ interface APODResponse {
 const extension: JupyterFrontEndPlugin<void> = {
   id: 'Collapsible_Headings',
   autoStart: true,
-  requires: [ICommandPalette],
+  requires: [ICommandPalette, ILayoutRestorer],
   activate: activate
 };
 
