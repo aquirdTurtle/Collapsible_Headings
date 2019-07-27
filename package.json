@@ -33,6 +33,7 @@
   "dependencies": {
     "@jupyterlab/application": "^1.0.2",
     "@jupyterlab/apputils": "^1.0.2",
+    "@phosphor/messaging": "^1.2.3",
     "@phosphor/widgets": "^1.8.1"
   },
   "devDependencies": {
