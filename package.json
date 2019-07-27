@@ -31,7 +31,9 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@jupyterlab/application": "^1.0.0"
+    "@jupyterlab/application": "^1.0.2",
+    "@jupyterlab/apputils": "^1.0.2",
+    "@phosphor/widgets": "^1.8.1"
   },
   "devDependencies": {
     "rimraf": "^2.6.1",
