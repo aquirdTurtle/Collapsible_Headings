@@ -1,29 +1,56 @@
 import {
-  JupyterFrontEnd, JupyterFrontEndPlugin, ILayoutRestorer
+  JupyterFrontEnd, JupyterFrontEndPlugin
 } from '@jupyterlab/application';
+
 import {
-  ICommandPalette//, MainAreaWidget, WidgetTracker
+  IDisposable, DisposableDelegate
+} from '@phosphor/disposable';
+
+import {
+  ToolbarButton
 } from '@jupyterlab/apputils';
-import{
-  //Widget
-} from '@phosphor/widgets';
+
 import {
-  //Message
-} from '@phosphor/messaging';
+  DocumentRegistry
+} from '@jupyterlab/docregistry';
 
-function activate(app: JupyterFrontEnd, palette: ICommandPalette,
-                  restorer: ILayoutRestorer) {
-  console.log('Colappsible_Headings Extension V0');
-}
+import {
+  NotebookActions, NotebookPanel, INotebookModel
+} from '@jupyterlab/notebook';
 
-/**
- * Initialization data for the Collapsible_Headings extension.
- */
-const extension: JupyterFrontEndPlugin<void> = {
-  id: 'Collapsible_Headings',
-  autoStart: true,
-  requires: [ICommandPalette, ILayoutRestorer],
-  activate: activate
+const plugin: JupyterFrontEndPlugin<void> = {
+  activate,
+  id: 'Colappsible_Headings:buttonPlugin',
+  autoStart: true
 };
 
-export default extension;
+
+export
+class ButtonExtension
+implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
+  // Create a new extension object
+  createNew(panel: NotebookPanel,
+            context: DocumentRegistry.IContext<INotebookModel>): IDisposable {
+    let callback = () => {
+      NotebookActions.runAll(panel.content, context.session);
+    };
+    let button = new ToolbarButton({
+      className: 'myButton',
+      iconClassName: 'fa fa-fast-forward',
+      onClick: callback,
+      tooltip: 'Run All Motherfucker'
+    })
+
+    panel.toolbar.insertItem(0, 'runAll', button);
+    return new DisposableDelegate(() => {
+      button.dispose();
+    });
+  }
+}
+
+function activate(app: JupyterFrontEnd) {
+  app.docRegistry.addWidgetExtension('Notebook', new ButtonExtension());
+  console.log('Colappsible_Headings Extension V1');
+};
+
+export default plugin;
