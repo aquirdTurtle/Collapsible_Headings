@@ -35,53 +35,94 @@ function activate(app: JupyterFrontEnd,  nbTrack: INotebookTracker){
   nbTrack.currentChanged.connect(()=>{
     //console.log('current notebook changed');
   })
-  nbTrack.activeCellChanged.connect(() => {
-    if (nbTrack.activeCell){
-      if (nbTrack.activeCell.constructor.name === "MarkdownCell"){
-        let actIndex = nbTrack.currentWidget.content.activeCellIndex;
-        let cell = nbTrack.currentWidget.content.widgets[actIndex];
-        console.log(cell);
-        let selectedHeaderInfo = getHeaderInfo(cell);
-        if (selectedHeaderInfo.isHeader)
-        {
-          let activeMetadata = cell.model.metadata;
-          console.log(activeMetadata);
-          let collapsing = true;
-          if (activeMetadata.has('Collapsed')){
-            // i.e. get the opposite of the current value.
-            collapsing = activeMetadata.get('Collapsed') === 'true' ? false : true;
+  nbTrack.activeCellChanged.connect(collapseCells);
+  NotebookActions.executed.connect(() => {
+    //console.log('cell executed.');
+  });
+};
+
+function collapseCells(nbTrack: INotebookTracker) {
+  if (nbTrack.activeCell) {
+    if (nbTrack.activeCell.constructor.name === "MarkdownCell"){
+      let actIndex = nbTrack.currentWidget.content.activeCellIndex;
+      let cell = nbTrack.currentWidget.content.widgets[actIndex];
+      console.log(cell);
+      let selectedHeaderInfo = getHeaderInfo(cell);
+      if (selectedHeaderInfo.isHeader){
+        // toggle
+        let collapsing = !getCollapsedMetadata(cell);
+        setCollapsedMetadata(cell, collapsing);
+        console.log(collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
+        let localCollapsed = false;
+        let localCollapsedLevel = 0;
+        // iterate through all cells after the active cell.
+        for (
+          let i = nbTrack.currentWidget.content.activeCellIndex+1;
+          i < nbTrack.currentWidget.content.widgets.length;
+          i++
+        ) {
+          console.log('Cell #', i);
+          let subCell = nbTrack.currentWidget.content.widgets[i];
+          let subCellHeaderInfo = getHeaderInfo(subCell);
+          if (
+            subCellHeaderInfo.isHeader
+            && subCellHeaderInfo.headerLevel <= selectedHeaderInfo.headerLevel
+          ){
+            // then reached an equivalent or higher header level than the
+            // original the end of the collapse.
+            console.log('Reached end of Collapse Section. Break.')
+            break;
           }
-          activeMetadata.set('Collapsed', collapsing ? 'true' : 'false');
-          // then toggle collapsed. Determine whether colappsing or uncolappsing
-          // based on the next cell's status.
-          //let nextCell = nbTrack.currentWidget.content.widgets[actIndex+1];
-          //let collapsing = nextCell.isHidden ? false : true;
-          console.log(collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
-          for (
-            let i = nbTrack.currentWidget.content.activeCellIndex+1;
-            i < nbTrack.currentWidget.content.widgets.length;
-            i++
+          if (
+            localCollapsed
+            && subCellHeaderInfo.isHeader
+            && subCellHeaderInfo.headerLevel <= localCollapsedLevel
           ) {
-            let subCell = nbTrack.currentWidget.content.widgets[i];
-            let subCellHeaderInfo = getHeaderInfo(subCell);
-            console.log(subCellHeaderInfo);
-            if (
-              !subCellHeaderInfo.isHeader
-              || subCellHeaderInfo.headerLevel > selectedHeaderInfo.headerLevel
-            ){
-              subCell.setHidden(collapsing);
-            } else {
-              break;
-            }
+            // then reached the end of the local collapsed, so unset this.
+            console.log('Reached End of local collapse.')
+            localCollapsed = false;
           }
+          if (collapsing || localCollapsed) {
+            // then no extra handling is needed for further locally collapsed
+            // headers.
+            console.log('Collapsing Normally.');
+            subCell.setHidden(true);
+            continue;
+          }
+          if (getCollapsedMetadata(subCell) && subCellHeaderInfo.isHeader) {
+            console.log('Found locally collapsed section.');
+            localCollapsed = true;
+            localCollapsedLevel = subCellHeaderInfo.headerLevel;
+            // but don't collapse the locally collapsed header, so continue to
+            // uncollapse the header. This will get noticed in the next round.
+          }
+          console.log('Uncollapsing Normally.');
+          subCell.setHidden(false);
         }
       }
     }
-  })
-  NotebookActions.executed.connect(() => {
-    //console.log('cell executed.');
-  })
-};
+  }
+}
+
+
+function getCollapsedMetadata(cell: Cell) : boolean {
+  let metadata = cell.model.metadata;
+  let collapsedData = false;
+  if (metadata.has('Collapsed')){
+    collapsedData = metadata.get('Collapsed') === 'true' ? true : false;
+  } else {
+    // default is false, not collapsed. Since the function will report false,
+    // Go ahead and add the corresponding metadata.
+    metadata.set('Collapsed', 'false');
+  }
+  return collapsedData;
+}
+
+function setCollapsedMetadata(cell: Cell, data: boolean) {
+  let metadata = cell.model.metadata;
+  metadata.set('Collapsed', data ? 'true' : 'false');
+}
+
 
 function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
   if (cell.constructor.name !== "MarkdownCell"){
