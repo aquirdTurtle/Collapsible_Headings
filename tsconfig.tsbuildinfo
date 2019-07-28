@@ -954,7 +954,7 @@
         "signature": "c03247b9d5b88491ca41870ea156bc8e53b5f8ab2d4b97ec8080cd070ff93f87"
       },
       "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/src/index.ts": {
-        "version": "1647a01e6c08577fac6f2f8fd663f9f8774f8ef720c48b6a485bfc9e00d59f25",
+        "version": "333031475c754d392680f45c34e230d2c1149e476a219d2b05801d76aa058211",
         "signature": "e5cb857883f9cca52181196f0431e4fcb79276f4158240e5f8d9039ca1cee4dd"
       }
     },
@@ -2324,7 +2324,8 @@
         "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@phosphor/disposable/lib/index.d.ts",
         "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/apputils/lib/index.d.ts",
         "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/docregistry/lib/index.d.ts",
-        "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/notebook/lib/index.d.ts"
+        "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/notebook/lib/index.d.ts",
+        "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/cells/lib/index.d.ts"
       ]
     },
     "exportedModulesMap": {
