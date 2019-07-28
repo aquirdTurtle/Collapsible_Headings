@@ -38,15 +38,25 @@ function activate(app: JupyterFrontEnd,  nbTrack: INotebookTracker){
   nbTrack.activeCellChanged.connect(() => {
     if (nbTrack.activeCell){
       if (nbTrack.activeCell.constructor.name === "MarkdownCell"){
-        let cell = nbTrack.activeCell;
+        let actIndex = nbTrack.currentWidget.content.activeCellIndex;
+        let cell = nbTrack.currentWidget.content.widgets[actIndex];
+        console.log(cell);
         let selectedHeaderInfo = getHeaderInfo(cell);
-        console.log(selectedHeaderInfo);
         if (selectedHeaderInfo.isHeader)
         {
-          console.log(
-            'active cell index:',
-            nbTrack.currentWidget.content.activeCellIndex
-          );
+          let activeMetadata = cell.model.metadata;
+          console.log(activeMetadata);
+          let collapsing = true;
+          if (activeMetadata.has('Collapsed')){
+            // i.e. get the opposite of the current value.
+            collapsing = activeMetadata.get('Collapsed') === 'true' ? false : true;
+          }
+          activeMetadata.set('Collapsed', collapsing ? 'true' : 'false');
+          // then toggle collapsed. Determine whether colappsing or uncolappsing
+          // based on the next cell's status.
+          //let nextCell = nbTrack.currentWidget.content.widgets[actIndex+1];
+          //let collapsing = nextCell.isHidden ? false : true;
+          console.log(collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
           for (
             let i = nbTrack.currentWidget.content.activeCellIndex+1;
             i < nbTrack.currentWidget.content.widgets.length;
@@ -59,7 +69,7 @@ function activate(app: JupyterFrontEnd,  nbTrack: INotebookTracker){
               !subCellHeaderInfo.isHeader
               || subCellHeaderInfo.headerLevel > selectedHeaderInfo.headerLevel
             ){
-              subCell.setHidden(!subCell.isHidden);
+              subCell.setHidden(collapsing);
             } else {
               break;
             }
