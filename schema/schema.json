@@ -1,0 +1,9 @@
+{
+  "jupyter.lab.shortcuts": [
+    {
+      "command": "Collapsible_Headings:Toggle_Collapse",
+      "keys": ["T"],
+      "selector": ".jp-Notebook"
+    }
+  ]
+}

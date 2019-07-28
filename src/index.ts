@@ -7,7 +7,7 @@ import {
 } from '@phosphor/disposable';
 
 import {
-  ToolbarButton
+  ToolbarButton, ICommandPalette
 } from '@jupyterlab/apputils';
 
 import {
@@ -24,81 +24,94 @@ import {
 
 const plugin: JupyterFrontEndPlugin<void> = {
   activate,
-  requires: [INotebookTracker],
+  requires: [INotebookTracker, ICommandPalette],
   id: 'Colappsible_Headings:buttonPlugin',
   autoStart: true
 };
 
-function activate(app: JupyterFrontEnd,  nbTrack: INotebookTracker){
+function activate(
+  app: JupyterFrontEnd,
+  nbTrack: INotebookTracker,
+  //requires: [INotebookTracker],
+  palette: ICommandPalette
+){
   app.docRegistry.addWidgetExtension('Notebook', new ButtonExtension());
   console.log('Collapsible_Headings Extension');
-  nbTrack.currentChanged.connect(()=>{
-    //console.log('current notebook changed');
-  })
-  nbTrack.activeCellChanged.connect(collapseCells);
-  NotebookActions.executed.connect(() => {
-    //console.log('cell executed.');
+
+  const command: string = 'Collapsible_Headings:Toggle_Collapse';
+  app.commands.addCommand(command, {
+    label: 'Toggle Collapse',
+    execute: () => { collapseCells(nbTrack); }
   });
+  app.commands.addKeyBinding({
+    command: command,
+    args: {},
+    keys: ['Accel Q'],
+    selector: '.jp-Notebook'
+  });
+  palette.addItem({command, category: 'Collapsible Headings'});
 };
 
 function collapseCells(nbTrack: INotebookTracker) {
-  if (nbTrack.activeCell) {
-    if (nbTrack.activeCell.constructor.name === "MarkdownCell"){
-      let actIndex = nbTrack.currentWidget.content.activeCellIndex;
-      let cell = nbTrack.currentWidget.content.widgets[actIndex];
-      console.log(cell);
-      let selectedHeaderInfo = getHeaderInfo(cell);
-      if (selectedHeaderInfo.isHeader){
-        // toggle
-        let collapsing = !getCollapsedMetadata(cell);
-        setCollapsedMetadata(cell, collapsing);
-        console.log(collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
-        let localCollapsed = false;
-        let localCollapsedLevel = 0;
-        // iterate through all cells after the active cell.
-        for (
-          let i = nbTrack.currentWidget.content.activeCellIndex+1;
-          i < nbTrack.currentWidget.content.widgets.length;
-          i++
-        ) {
-          console.log('Cell #', i);
-          let subCell = nbTrack.currentWidget.content.widgets[i];
-          let subCellHeaderInfo = getHeaderInfo(subCell);
-          if (
-            subCellHeaderInfo.isHeader
-            && subCellHeaderInfo.headerLevel <= selectedHeaderInfo.headerLevel
-          ){
-            // then reached an equivalent or higher header level than the
-            // original the end of the collapse.
-            console.log('Reached end of Collapse Section. Break.')
-            break;
-          }
-          if (
-            localCollapsed
-            && subCellHeaderInfo.isHeader
-            && subCellHeaderInfo.headerLevel <= localCollapsedLevel
-          ) {
-            // then reached the end of the local collapsed, so unset this.
-            console.log('Reached End of local collapse.')
-            localCollapsed = false;
-          }
-          if (collapsing || localCollapsed) {
-            // then no extra handling is needed for further locally collapsed
-            // headers.
-            console.log('Collapsing Normally.');
-            subCell.setHidden(true);
-            continue;
-          }
-          if (getCollapsedMetadata(subCell) && subCellHeaderInfo.isHeader) {
-            console.log('Found locally collapsed section.');
-            localCollapsed = true;
-            localCollapsedLevel = subCellHeaderInfo.headerLevel;
-            // but don't collapse the locally collapsed header, so continue to
-            // uncollapse the header. This will get noticed in the next round.
-          }
-          console.log('Uncollapsing Normally.');
-          subCell.setHidden(false);
+  if (!nbTrack.activeCell) {
+    return;
+  }
+  console.log(nbTrack);
+  if (nbTrack.activeCell.constructor.name === "MarkdownCell"){
+    let actIndex = nbTrack.currentWidget.content.activeCellIndex;
+    let cell = nbTrack.currentWidget.content.widgets[actIndex];
+    //cell.layout.addWidget();
+    let selectedHeaderInfo = getHeaderInfo(cell);
+    if (selectedHeaderInfo.isHeader){
+      // toggle
+      let collapsing = !getCollapsedMetadata(cell);
+      setCollapsedMetadata(cell, collapsing);
+      console.log(collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
+      let localCollapsed = false;
+      let localCollapsedLevel = 0;
+      // iterate through all cells after the active cell.
+      for (
+        let i = nbTrack.currentWidget.content.activeCellIndex+1;
+        i < nbTrack.currentWidget.content.widgets.length;
+        i++
+      ) {
+        console.log('Cell #', i);
+        let subCell = nbTrack.currentWidget.content.widgets[i];
+        let subCellHeaderInfo = getHeaderInfo(subCell);
+        if (
+          subCellHeaderInfo.isHeader
+          && subCellHeaderInfo.headerLevel <= selectedHeaderInfo.headerLevel
+        ){
+          // then reached an equivalent or higher header level than the
+          // original the end of the collapse.
+          console.log('Reached end of Collapse Section. Break.')
+          break;
         }
+        if (
+          localCollapsed
+          && subCellHeaderInfo.isHeader
+          && subCellHeaderInfo.headerLevel <= localCollapsedLevel
+        ) {
+          // then reached the end of the local collapsed, so unset this.
+          console.log('Reached End of local collapse.')
+          localCollapsed = false;
+        }
+        if (collapsing || localCollapsed) {
+          // then no extra handling is needed for further locally collapsed
+          // headers.
+          console.log('Collapsing Normally.');
+          subCell.setHidden(true);
+          continue;
+        }
+        if (getCollapsedMetadata(subCell) && subCellHeaderInfo.isHeader) {
+          console.log('Found locally collapsed section.');
+          localCollapsed = true;
+          localCollapsedLevel = subCellHeaderInfo.headerLevel;
+          // but don't collapse the locally collapsed header, so continue to
+          // uncollapse the header. This will get noticed in the next round.
+        }
+        console.log('Uncollapsing Normally.');
+        subCell.setHidden(false);
       }
     }
   }
