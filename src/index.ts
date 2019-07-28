@@ -15,11 +15,12 @@ import {
 } from '@jupyterlab/docregistry';
 
 import {
-  NotebookActions, NotebookPanel, INotebookModel
+  NotebookActions, NotebookPanel, INotebookModel, INotebookTracker
 } from '@jupyterlab/notebook';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   activate,
+  requires: [INotebookTracker],
   id: 'Colappsible_Headings:buttonPlugin',
   autoStart: true
 };
@@ -38,7 +39,7 @@ implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
       className: 'myButton',
       iconClassName: 'fa fa-fast-forward',
       onClick: callback,
-      tooltip: 'Run All Motherfucker'
+      tooltip: 'Run All'
     })
 
     panel.toolbar.insertItem(0, 'runAll', button);
@@ -48,9 +49,15 @@ implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
   }
 }
 
-function activate(app: JupyterFrontEnd) {
+function activate(app: JupyterFrontEnd, nbTrack: INotebookTracker) {
   app.docRegistry.addWidgetExtension('Notebook', new ButtonExtension());
-  console.log('Colappsible_Headings Extension V1');
+  console.log('Colappsible_Headings Extension V4');
+  nbTrack.activeCellChanged.connect(() => {
+    console.log('active cell changed');
+  })
+  NotebookActions.executed.connect(() => {
+    console.log('cell executed.');
+  })
 };
 
 export default plugin;
