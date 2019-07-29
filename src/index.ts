@@ -3,19 +3,11 @@ import {
 } from '@jupyterlab/application';
 
 import {
-  IDisposable, DisposableDelegate
-} from '@phosphor/disposable';
-
-import {
-  ToolbarButton, ICommandPalette
+  ICommandPalette
 } from '@jupyterlab/apputils';
 
 import {
-  DocumentRegistry
-} from '@jupyterlab/docregistry';
-
-import {
-  NotebookActions, NotebookPanel, INotebookModel, INotebookTracker
+  INotebookTracker
 } from '@jupyterlab/notebook';
 
 import {
@@ -35,9 +27,7 @@ function activate(
   //requires: [INotebookTracker],
   palette: ICommandPalette
 ){
-  app.docRegistry.addWidgetExtension('Notebook', new ButtonExtension());
   console.log('Collapsible_Headings Extension');
-
   const command: string = 'Collapsible_Headings:Toggle_Collapse';
   app.commands.addCommand(command, {
     label: 'Toggle Collapse',
@@ -56,12 +46,13 @@ function collapseCells(nbTrack: INotebookTracker) {
   if (!nbTrack.activeCell) {
     return;
   }
-  console.log(nbTrack);
   if (nbTrack.activeCell.constructor.name === "MarkdownCell"){
     let actIndex = nbTrack.currentWidget.content.activeCellIndex;
     let cell = nbTrack.currentWidget.content.widgets[actIndex];
-    //cell.
-    //cell.layout.addWidget();
+    if (cell.isHidden){
+      // otherwise collapsing and uncollapsing already hidden stuff can cause some funny looking bugs. 
+      return;
+    }
     let selectedHeaderInfo = getHeaderInfo(cell);
     if (selectedHeaderInfo.isHeader){
       // Then toggle!
@@ -174,28 +165,6 @@ function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
     level = parseInt(match3[1], 10);
   }
   return {isHeader:isHeader, headerLevel:level};
-}
-
-export
-class ButtonExtension
-implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
-  // Create a new extension object
-  createNew(panel: NotebookPanel,
-            context: DocumentRegistry.IContext<INotebookModel>): IDisposable {
-    let callback = () => {
-      NotebookActions.runAll(panel.content, context.session);
-    };
-    let button = new ToolbarButton({
-      className: 'myButton',
-      iconClassName: 'fa fa-fast-forward',
-      onClick: callback,
-      tooltip: 'Run All'
-    })
-    panel.toolbar.insertItem(0, 'runAll', button);
-    return new DisposableDelegate(() => {
-      button.dispose();
-    });
-  }
 }
 
 export default plugin;

@@ -954,8 +954,8 @@
         "signature": "c03247b9d5b88491ca41870ea156bc8e53b5f8ab2d4b97ec8080cd070ff93f87"
       },
       "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/src/index.ts": {
-        "version": "63a886da8f93892ab318c42a2cc4bd7b21cdaa4fe9d4fb64255468ac363e5653",
-        "signature": "e5cb857883f9cca52181196f0431e4fcb79276f4158240e5f8d9039ca1cee4dd"
+        "version": "9e2099e8e1252bf67cc11c71eb84b75b77e3d7d69e62d26fff551a8c2ed8431f",
+        "signature": "527fc3aa988fa86a79e1b55d82a6e6df92075a06286489b0ea7a84cae1c2beb0"
       }
     },
     "options": {
@@ -2321,9 +2321,7 @@
       ],
       "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/src/index.ts": [
         "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/application/lib/index.d.ts",
-        "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@phosphor/disposable/lib/index.d.ts",
         "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/apputils/lib/index.d.ts",
-        "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/docregistry/lib/index.d.ts",
         "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/notebook/lib/index.d.ts",
         "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/cells/lib/index.d.ts"
       ]
@@ -3668,10 +3666,7 @@
         "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/notebook/lib/tokens.d.ts"
       ],
       "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/src/index.ts": [
-        "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/application/lib/index.d.ts",
-        "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/notebook/lib/index.d.ts",
-        "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/docregistry/lib/index.d.ts",
-        "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@phosphor/disposable/lib/index.d.ts"
+        "c:/users/mark-brown/code/jupyterlab_collapsible_headings/collapsible_headings/node_modules/@jupyterlab/application/lib/index.d.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
