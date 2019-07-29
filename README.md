@@ -13,7 +13,7 @@ This is an early version of this idea. Core collapsing functionality has been im
 ## Installation
 
 ```bash
-jupyter labextension install @aquirdturtle/Collapsible_Headings
+jupyter labextension install @aquirdturtle/collapsible_headings
 ```
 
 ## Development

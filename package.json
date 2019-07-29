@@ -1,5 +1,5 @@
 {
-  "name": "@aquirdturtle/Collapsible_Headings",
+  "name": "@aquirdturtle/collapsible_headings",
   "version": "0.1.0",
   "description": "Make headings collapsible like the old Jupyter notebook extension and like mathematica notebooks.",
   "keywords": [
@@ -50,6 +50,5 @@
   ],
   "jupyterlab": {
     "extension": true,
-    "schemaDir": "schema"
   }
 }
