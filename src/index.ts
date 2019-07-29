@@ -40,6 +40,33 @@ function activate(
     selector: '.jp-Notebook'
   });
   palette.addItem({command, category: 'Collapsible Headings'});
+
+  nbTrack.activeCellChanged.connect(() => {
+    console.log("active cell changed signal received");
+    let allWidgets = nbTrack.currentWidget.content.widgets;
+    for (let i = 0; i < allWidgets.length; i++) {
+      let subCell = allWidgets[i];
+      let subCellHeaderInfo = getHeaderInfo(subCell);
+      
+      if ( subCellHeaderInfo.isHeader ) {
+       addButton(subCell, nbTrack); 
+      }
+    }
+  });
+  
+};
+
+function addButton(cell: Cell, nbTrack: INotebookTracker) {
+  if (cell.promptNode.getElementsByClassName("toc-button").length == 0) {
+
+    let indicator = cell.promptNode.appendChild(document.createElement("div"));
+    indicator.className = "toc-button"
+    indicator.style.width = "100%";
+    indicator.style.height = "100%";
+    indicator.style.backgroundColor = "#ADD8E6";
+    
+    indicator.onclick = () => { collapseCells(nbTrack); };
+  }
 };
 
 function collapseCells(nbTrack: INotebookTracker) {
