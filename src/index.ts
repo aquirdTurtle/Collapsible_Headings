@@ -60,15 +60,29 @@ function collapseCells(nbTrack: INotebookTracker) {
   if (nbTrack.activeCell.constructor.name === "MarkdownCell"){
     let actIndex = nbTrack.currentWidget.content.activeCellIndex;
     let cell = nbTrack.currentWidget.content.widgets[actIndex];
+    //cell.
     //cell.layout.addWidget();
     let selectedHeaderInfo = getHeaderInfo(cell);
     if (selectedHeaderInfo.isHeader){
-      // toggle
+      // Then toggle!
       let collapsing = !getCollapsedMetadata(cell);
       setCollapsedMetadata(cell, collapsing);
       console.log(collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
       let localCollapsed = false;
       let localCollapsedLevel = 0;
+      let txt = cell.model.value.text
+      if (collapsing){
+        // a quick hack to make *some* sort of visual indication that the cell is
+        // collapsed.
+         cell.model.value.text += "(...)";
+        //console.log(cell.model.value.text);
+      } else {
+        if (txt.substring(txt.length - 5) === "(...)" ){
+            cell.model.value.text = txt.substring(0, txt.length - 5);
+        }
+      }
+      // else the "(...)" is slow to appear.
+      cell.update();
       // iterate through all cells after the active cell.
       for (
         let i = nbTrack.currentWidget.content.activeCellIndex+1;
@@ -177,7 +191,6 @@ implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
       onClick: callback,
       tooltip: 'Run All'
     })
-
     panel.toolbar.insertItem(0, 'runAll', button);
     return new DisposableDelegate(() => {
       button.dispose();
