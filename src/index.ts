@@ -65,19 +65,19 @@ function setButtonIcon(button: HTMLElement, collapsed: boolean) {
 }
 
 function getOrCreateCollapseButton(cell: Cell, nbTrack: INotebookTracker) {
-	if (cell.promptNode.getElementsByClassName("toc-button").length == 0) {
+  if (cell.promptNode.getElementsByClassName("toc-button").length == 0) {
     let collapseButton = cell.promptNode.appendChild(document.createElement("button"));
-	  collapseButton.className = "bp3-button bp3-minimal jp-Button minimal toc-button";
-	  collapseButton.onclick = () => { collapseCells(nbTrack); };
-		return collapseButton
-	} else {
+    collapseButton.className = "bp3-button bp3-minimal jp-Button minimal toc-button";
+    collapseButton.onclick = () => { collapseCells(nbTrack); };
+    return collapseButton
+  } else {
     return cell.promptNode.getElementsByClassName("toc-button")[0];
   }
 }
 
 function addButton(cell: Cell, nbTrack: INotebookTracker) {
   let button = getOrCreateCollapseButton(cell, nbTrack);
-	setButtonIcon(button as HTMLElement, false);
+  setButtonIcon(button as HTMLElement, false);
 };
 
 function collapseCells(nbTrack: INotebookTracker) {
@@ -96,8 +96,8 @@ function collapseCells(nbTrack: INotebookTracker) {
       // Then toggle!
       let collapsing = !getCollapsedMetadata(cell);
       setCollapsedMetadata(cell, collapsing);
-			let button = getOrCreateCollapseButton(cell, nbTrack);
-			setButtonIcon(button as HTMLElement, collapsing);
+      let button = getOrCreateCollapseButton(cell, nbTrack);
+      setButtonIcon(button as HTMLElement, collapsing);
       console.log(collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
       let localCollapsed = false;
       let localCollapsedLevel = 0;
