@@ -182,7 +182,7 @@ function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
   let match = line.match(/^([#]{1,6}) (.*)/);
   let match2 = line2 && line2.match(/^([=]{2,}|[-]{2,})/);
   let match3 = line.match(/<h([1-6])>(.*)<\/h\1>/i);
-  let isHeader = (match !== null) || (match2 !== undefined) || (match3 !== null);
+  let isHeader = (match !== null) || (match2 !== undefined && match2 !== null) || (match3 !== null);
   let level = 0;
   if (match){
     level = match[1].length;
