@@ -8,13 +8,12 @@ This is an early version of this idea. Core collapsing functionality has been im
 ![Alt Text](Demo.gif)
 
 ## Prerequisites
-
 * JupyterLab
 
 ## Installation
 
 ```bash
-jupyter labextension install Collapsible_Headings
+jupyter labextension install @aquirdturtle/Collapsible_Headings
 ```
 
 ## Development

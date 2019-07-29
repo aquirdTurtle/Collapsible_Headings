@@ -1,5 +1,5 @@
 {
-  "name": "Collapsible_Headings",
+  "name": "@aquirdturtle/Collapsible_Headings",
   "version": "0.1.0",
   "description": "Make headings collapsible like the old Jupyter notebook extension and like mathematica notebooks.",
   "keywords": [
@@ -7,9 +7,9 @@
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/my_name/myextension",
+  "homepage": "https://github.com/aquirdTurtle/Collapsible_Headings",
   "bugs": {
-    "url": "https://github.com/my_name/myextension/issues"
+    "url": "https://github.com/aquirdTurtle/Collapsible_Headings/issues"
   },
   "license": "BSD-3-Clause",
   "author": "Mark O Brown",
@@ -22,7 +22,7 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/my_name/myextension.git"
+    "url": "https://github.com/aquirdTurtle/Collapsible_Headings.git"
   },
   "scripts": {
     "build": "tsc",
