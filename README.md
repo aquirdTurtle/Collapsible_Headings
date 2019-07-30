@@ -2,10 +2,10 @@
 
 Make headings collapsible like the old Jupyter notebook extension and like Mathematica notebooks.
 
-This is an early version of this idea. Core collapsing functionality has been implemented, but the UI for this functionality still leaves a lot to be desired. A selected header cell (i.e. markdown cell starting with some number of "#") can be collapsed / uncollapsed by using the **ctrl Q** hotkey (currently hard-coded) or by explicitly calling the collapse command in the commands utility on the left area of jupyterlab. I have yet to figure out how to add a widget to the cell to have some clickable ui-element for collapsing as opposed to the shortcut, and similarly in order to visually indicate that there is collapsed content, the extension appends "(...)" to the markdown cell when it collapses it and removes that text (if it is there) when uncollapsing. 
+This is an early version of this idea. Core collapsing functionality has been implemented, but the UI for this functionality still leaves a lot to be desired. A selected header cell (i.e. markdown cell starting with some number of "#") can be collapsed / uncollapsed by using the **ctrl Q** hotkey (currently hard-coded) or by explicitly calling the collapse command in the commands utility on the left area of jupyterlab. I have yet to figure out how to add a widget to the cell to have some clickable ui-element for collapsing as opposed to the shortcut, and similarly in order to visually indicate that there is collapsed content, the extension appends "(...)" to the markdown cell when it collapses it and removes that text (if it is there) when uncollapsing.
 
 
-![Alt Text](Demo.gif)
+![Alt Text](Demo2.gif)
 
 ## Prerequisites
 * JupyterLab
@@ -32,4 +32,3 @@ To rebuild the package and the JupyterLab app:
 npm run build
 jupyter lab build
 ```
-
