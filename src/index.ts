@@ -41,14 +41,14 @@ function activate(
   palette.addItem({command, category: 'Collapsible Headings'});
 
   nbTrack.currentChanged.connect(()=>{
-    // the point of this is to set the initial buttons upon opening the notebook. Incisde this call
-    // itself I find that the cell widgets list has not yet been populated.
-    // There's probably a better way to do this, but I haven't figured how to access the 
-    // notebook specifically at a time after nbTrack.currentWidget.content.widgets has been populated. 
-    setTimeout(()=>{ updateButtons(nbTrack);}, 1000);
-    setTimeout(()=>{ updateNotebookCollapsedState(nbTrack);}, 1100);
+    nbTrack.currentWidget.content.model.stateChanged.connect(()=>{
+      console.log('notebook model state change detected.');
+      // this is a signal that I found that gets called after the cell list has been populated, so possible
+      // to initialize these things now.
+      updateButtons(nbTrack);
+      updateNotebookCollapsedState(nbTrack);
+    });
   });
-  
   nbTrack.activeCellChanged.connect(() => {
     updateButtons(nbTrack);
   });
@@ -94,6 +94,7 @@ function setButtonIcon(button: HTMLElement, collapsed: boolean, headerLevel: num
 function getOrCreateCollapseButton(cell: Cell, nbTrack: INotebookTracker) {
   if (cell.promptNode.getElementsByClassName("toc-button").length == 0) {
     let collapseButton = cell.promptNode.appendChild(document.createElement("button"));
+    
     collapseButton.className = "bp3-button bp3-minimal jp-Button minimal toc-button";
     collapseButton.onclick = () => { toggleCurrentCellCollapse(nbTrack); };
     return collapseButton
