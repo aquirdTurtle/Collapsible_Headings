@@ -27,18 +27,32 @@ function activate(
   palette: ICommandPalette
 ){
   console.log('Collapsible_Headings Extension!!!');
-  const command: string = 'Collapsible_Headings:Toggle_Collapse';
-  app.commands.addCommand(command, {
+  const command1: string = 'Collapsible_Headings:Toggle_Collapse';
+  app.commands.addCommand(command1, {
     label: 'Toggle Collapse',
     execute: () => { toggleCurrentCellCollapse(nbTrack); }
   });
+  const command2: string = 'Collapsible_Headings:Manually_Update_Collapse_Buttons';
+  app.commands.addCommand(command2, {
+    label: 'Refresh Update Collapse Buttons',
+    execute: () => { updateButtons(nbTrack); }
+  });
+  const command3: string = 'Collapsible_Headings:Manually_Update_Notebook_Collapse_State';
+  app.commands.addCommand(command3, {
+    label: 'Refresh Notebook Collapse State',
+    execute: () => { updateNotebookCollapsedState(nbTrack); }
+  });
+
   app.commands.addKeyBinding({
-    command: command,
+    command: command1,
     args: {},
     keys: ['Accel Q'],
     selector: '.jp-Notebook'
   });
-  palette.addItem({command, category: 'Collapsible Headings'});
+  //let test : IPaletteItem = {command, category: 'Collapsible Headings'};
+  palette.addItem({command:command1, category: 'Collapsible Headings'});
+  palette.addItem({command:command2, category: 'Collapsible Headings'});
+  palette.addItem({command:command3, category: 'Collapsible Headings'});
 
   nbTrack.currentChanged.connect(()=>{
     nbTrack.currentWidget.content.model.stateChanged.connect(()=>{
@@ -55,6 +69,7 @@ function activate(
 };
 
 function updateNotebookCollapsedState(nbTrack: INotebookTracker){
+  console.log('Updating Notebook Collapse State');
   let nextCellIndex = 0;
   let count = 0;
   while (nextCellIndex < nbTrack.currentWidget.content.widgets.length && count < 100)
@@ -68,6 +83,7 @@ function updateNotebookCollapsedState(nbTrack: INotebookTracker){
 }
 
 function updateButtons(nbTrack: INotebookTracker){
+  console.log('Updating Collapsible Heading Buttons');
   let allWidgets = nbTrack.currentWidget.content.widgets;
   for (let i = 0; i < allWidgets.length; i++) {
     let subCell = allWidgets[i];
