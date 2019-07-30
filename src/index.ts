@@ -111,7 +111,6 @@ function setButtonIcon(button: HTMLElement, collapsed: boolean, headerLevel: num
 function getOrCreateCollapseButton(cell: Cell, nbTrack: INotebookTracker) {
   if (cell.promptNode.getElementsByClassName("toc-button").length == 0) {
     let collapseButton = cell.promptNode.appendChild(document.createElement("button"));
-    
     collapseButton.className = "bp3-button bp3-minimal jp-Button minimal toc-button";
     collapseButton.onclick = () => { toggleCurrentCellCollapse(nbTrack); };
     return collapseButton
@@ -141,7 +140,8 @@ function setCellCollapse(nbTrack: INotebookTracker, which: number, collapsing: b
     return which+1;
   }
   if (cell.isHidden || cell.constructor.name !== "MarkdownCell"){
-    // otherwise collapsing and uncollapsing already hidden stuff can cause some funny looking bugs. 
+    // otherwise collapsing and uncollapsing already hidden stuff can 
+    // cause some funny looking bugs.
     console.log(which, 'cell hidden or not markdown');
     return which+1;
   }
@@ -158,13 +158,13 @@ function setCellCollapse(nbTrack: INotebookTracker, which: number, collapsing: b
   let localCollapsed = false;
   let localCollapsedLevel = 0;
   // iterate through all cells after the active cell.
-  let i = which+1
+  let cellNum = which+1
   for (
-    i = which+1;
-    i < nbTrack.currentWidget.content.widgets.length;
-    i++
+    cellNum = which+1;
+    cellNum < nbTrack.currentWidget.content.widgets.length;
+    cellNum++
   ) {
-    let subCell = nbTrack.currentWidget.content.widgets[i];
+    let subCell = nbTrack.currentWidget.content.widgets[cellNum];
     let subCellHeaderInfo = getHeaderInfo(subCell);
     if (
       subCellHeaderInfo.isHeader
@@ -172,8 +172,8 @@ function setCellCollapse(nbTrack: INotebookTracker, which: number, collapsing: b
     ){
       // then reached an equivalent or higher header level than the
       // original the end of the collapse.
-      console.log(i, 'Reached end of Collapse Section. Break.')
-      i -= 1;
+      console.log(cellNum, 'Reached end of Collapse Section. Break.')
+      cellNum -= 1;
       break;
     }
     if (
@@ -182,27 +182,27 @@ function setCellCollapse(nbTrack: INotebookTracker, which: number, collapsing: b
       && subCellHeaderInfo.headerLevel <= localCollapsedLevel
     ) {
       // then reached the end of the local collapsed, so unset this.
-      console.log(i, 'Reached End of local collapse.')
+      console.log(cellNum, 'Reached End of local collapse.')
       localCollapsed = false;
     }
     if (collapsing || localCollapsed) {
       // then no extra handling is needed for further locally collapsed
       // headers.
-      console.log(i, 'Collapsing Normally.');
+      console.log(cellNum, 'Collapsing Normally.');
       subCell.setHidden(true);
       continue;
     }
     if (getCollapsedMetadata(subCell) && subCellHeaderInfo.isHeader) {
-      console.log(i, 'Found locally collapsed section.');
+      console.log(cellNum, 'Found locally collapsed section.');
       localCollapsed = true;
       localCollapsedLevel = subCellHeaderInfo.headerLevel;
       // but don't collapse the locally collapsed header, so continue to
       // uncollapse the header. This will get noticed in the next round.
     }
-    console.log(i, 'Uncollapsing Normally.');
+    console.log(cellNum, 'Uncollapsing Normally.');
     subCell.setHidden(false);
   }
-  return i + 1;
+  return cellNum + 1;
 }
 
 
