@@ -56,17 +56,28 @@ function activate(
   
 };
 
-function addButton(cell: Cell, nbTrack: INotebookTracker) {
-  if (cell.promptNode.getElementsByClassName("toc-button").length == 0) {
-
-    let indicator = cell.promptNode.appendChild(document.createElement("div"));
-    indicator.className = "toc-button"
-    indicator.style.width = "100%";
-    indicator.style.height = "100%";
-    indicator.style.backgroundColor = "#ADD8E6";
-    
-    indicator.onclick = () => { collapseCells(nbTrack); };
+function setButtonIcon(button: HTMLElement, collapsed: boolean) {
+  if (collapsed) {
+    button.style.background = "var(--jp-icon-caretright) no-repeat center";
+  } else {
+    button.style.background = "var(--jp-icon-caretdown) no-repeat center";
   }
+}
+
+function getOrCreateCollapseButton(cell: Cell, nbTrack: INotebookTracker) {
+  if (cell.promptNode.getElementsByClassName("toc-button").length == 0) {
+    let collapseButton = cell.promptNode.appendChild(document.createElement("button"));
+    collapseButton.className = "bp3-button bp3-minimal jp-Button minimal toc-button";
+    collapseButton.onclick = () => { collapseCells(nbTrack); };
+    return collapseButton
+  } else {
+    return cell.promptNode.getElementsByClassName("toc-button")[0];
+  }
+}
+
+function addButton(cell: Cell, nbTrack: INotebookTracker) {
+  let button = getOrCreateCollapseButton(cell, nbTrack);
+  setButtonIcon(button as HTMLElement, false);
 };
 
 function collapseCells(nbTrack: INotebookTracker) {
@@ -85,6 +96,8 @@ function collapseCells(nbTrack: INotebookTracker) {
       // Then toggle!
       let collapsing = !getCollapsedMetadata(cell);
       setCollapsedMetadata(cell, collapsing);
+      let button = getOrCreateCollapseButton(cell, nbTrack);
+      setButtonIcon(button as HTMLElement, collapsing);
       console.log(collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
       let localCollapsed = false;
       let localCollapsedLevel = 0;
