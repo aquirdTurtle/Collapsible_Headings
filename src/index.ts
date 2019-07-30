@@ -26,7 +26,8 @@ function activate(
   nbTrack: INotebookTracker,
   palette: ICommandPalette
 ){
-  console.log('Collapsible_Headings Extension!!!');
+  console.log('Collapsible_Headings Extension Active!');
+  // Add 3 commands to the command palette
   const command1: string = 'Collapsible_Headings:Toggle_Collapse';
   app.commands.addCommand(command1, {
     label: 'Toggle Collapse',
@@ -50,9 +51,9 @@ function activate(
     selector: '.jp-Notebook'
   });
   //let test : IPaletteItem = {command, category: 'Collapsible Headings'};
-  palette.addItem({command:command1, category: 'Collapsible Headings'});
-  palette.addItem({command:command2, category: 'Collapsible Headings'});
-  palette.addItem({command:command3, category: 'Collapsible Headings'});
+  palette.addItem({command:command1, category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command2, category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command3, category: 'Collapsible Headings Extension'});
 
   nbTrack.currentChanged.connect(()=>{
     nbTrack.currentWidget.content.model.stateChanged.connect(()=>{
@@ -72,11 +73,11 @@ function updateNotebookCollapsedState(nbTrack: INotebookTracker){
   console.log('Updating Notebook Collapse State');
   let nextCellIndex = 0;
   let count = 0;
-  while (nextCellIndex < nbTrack.currentWidget.content.widgets.length && count < 100)
-  {
+  // increment through all the potentially collapsible blocks. 
+  // Put in this 1e6 limit in case sometihng goes wrong to prevent permanent freeze in the while loop.
+  while (nextCellIndex < nbTrack.currentWidget.content.widgets.length && count < 1e6){
     nextCellIndex = setCellCollapse(
-      nbTrack, 
-      nextCellIndex, 
+      nbTrack, nextCellIndex, 
       getCollapsedMetadata(nbTrack.currentWidget.content.widgets[nextCellIndex]));
     count += 1;
   }
@@ -85,8 +86,8 @@ function updateNotebookCollapsedState(nbTrack: INotebookTracker){
 function updateButtons(nbTrack: INotebookTracker){
   console.log('Updating Collapsible Heading Buttons');
   let allWidgets = nbTrack.currentWidget.content.widgets;
-  for (let i = 0; i < allWidgets.length; i++) {
-    let subCell = allWidgets[i];
+  for (let widgetNum = 0; widgetNum < allWidgets.length; widgetNum++) {
+    let subCell = allWidgets[widgetNum];
     let subCellHeaderInfo = getHeaderInfo(subCell);
     if ( subCellHeaderInfo.isHeader ) {
      addButton(subCell, nbTrack); 
