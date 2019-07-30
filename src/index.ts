@@ -24,7 +24,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
 function activate(
   app: JupyterFrontEnd,
   nbTrack: INotebookTracker,
-  //requires: [INotebookTracker],
   palette: ICommandPalette
 ){
   console.log('Collapsible_Headings Extension');
@@ -40,28 +39,31 @@ function activate(
     selector: '.jp-Notebook'
   });
   palette.addItem({command, category: 'Collapsible Headings'});
-
   nbTrack.activeCellChanged.connect(() => {
     console.log("active cell changed signal received");
     let allWidgets = nbTrack.currentWidget.content.widgets;
     for (let i = 0; i < allWidgets.length; i++) {
       let subCell = allWidgets[i];
       let subCellHeaderInfo = getHeaderInfo(subCell);
-      
       if ( subCellHeaderInfo.isHeader ) {
        addButton(subCell, nbTrack); 
       }
     }
   });
-  
 };
 
-function setButtonIcon(button: HTMLElement, collapsed: boolean) {
+function setButtonIcon(button: HTMLElement, collapsed: boolean, headerLevel: number) {
   if (collapsed) {
     button.style.background = "var(--jp-icon-caretright) no-repeat center";
   } else {
     button.style.background = "var(--jp-icon-caretdown) no-repeat center";
   }
+  // center the icons better.
+  button.style.position = "relative";
+  // found this offset & multiplier by trial and error. There's probably a better way to do this.
+  let offset = -15 + headerLevel * 4;
+  button.style.bottom = offset.toString()+"px";
+  console.log(offset, button.style.bottom);
 }
 
 function getOrCreateCollapseButton(cell: Cell, nbTrack: INotebookTracker) {
@@ -77,7 +79,9 @@ function getOrCreateCollapseButton(cell: Cell, nbTrack: INotebookTracker) {
 
 function addButton(cell: Cell, nbTrack: INotebookTracker) {
   let button = getOrCreateCollapseButton(cell, nbTrack);
-  setButtonIcon(button as HTMLElement, false);
+  let collapsed = getCollapsedMetadata(cell);
+  let headerLevel = getHeaderInfo(cell).headerLevel;
+  setButtonIcon(button as HTMLElement, collapsed, headerLevel);
 };
 
 function collapseCells(nbTrack: INotebookTracker) {
@@ -97,23 +101,11 @@ function collapseCells(nbTrack: INotebookTracker) {
       let collapsing = !getCollapsedMetadata(cell);
       setCollapsedMetadata(cell, collapsing);
       let button = getOrCreateCollapseButton(cell, nbTrack);
-      setButtonIcon(button as HTMLElement, collapsing);
+      let headerLevel = getHeaderInfo(cell).headerLevel;
+      setButtonIcon(button as HTMLElement, collapsing, headerLevel);
       console.log(collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
       let localCollapsed = false;
       let localCollapsedLevel = 0;
-      let txt = cell.model.value.text
-      if (collapsing){
-        // a quick hack to make *some* sort of visual indication that the cell is
-        // collapsed.
-         cell.model.value.text += "(...)";
-        //console.log(cell.model.value.text);
-      } else {
-        if (txt.substring(txt.length - 5) === "(...)" ){
-            cell.model.value.text = txt.substring(0, txt.length - 5);
-        }
-      }
-      // else the "(...)" is slow to appear.
-      cell.update();
       // iterate through all cells after the active cell.
       for (
         let i = nbTrack.currentWidget.content.activeCellIndex+1;
