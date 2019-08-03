@@ -13,6 +13,7 @@ import {
 import {
   Cell
 } from '@jupyterlab/cells';
+//import { CodeEditor } from '@jupyterlab/codeeditor';
 //import { cloneElement } from 'react';
 
 
@@ -72,10 +73,23 @@ function activate(
     });
   });
   NotebookActions.executed.connect(() => {
-    console.log('cell executed.');
+    console.log('cell executed. Updating buttons.');
     updateButtons(nbTrack);
   })
-  nbTrack.widgetAdded.connect(()=>{console.log('nbtrack widget added message seen!',nbTrack.currentWidget.content.widgets.length)});
+  nbTrack.widgetAdded.connect(()=>{
+    console.log('nbtrack widget added message seen!',nbTrack.currentWidget.content.widgets.length);
+    /*
+    nbTrack.currentWidget.content.model.contentChanged.connect(
+      ()=>{console.log('nbTrack.currentWidget.content.model.contentChanged')}
+      );
+    nbTrack.currentWidget.content.model.cells.changed.connect(
+      ()=>{console.log('nbTrack.currentWidget.content.model.cells.changed')}
+      );
+    nbTrack.currentWidget.content.model.stateChanged.connect(
+      ()=>{console.log('nbTrack.currentWidget.content.model.cells.changed')}
+    );
+    */
+  });
   nbTrack.currentChanged.connect(()=>{console.log('nbtrack current changed message seen!',nbTrack.currentWidget.content.widgets.length)});
   //nbTrack.currentWidget.content.activeCellChanged.connect(() => {
   nbTrack.activeCellChanged.connect(() => {
@@ -95,7 +109,6 @@ function activate(
       // then uncollapse. 
       setCellCollapse(nbTrack, parentLoc, false );
     }
-    //updateButtons(nbTrack);
   });
 };
 
@@ -183,30 +196,38 @@ function addButton(cell: Cell, nbTrack: INotebookTracker) {
   setButtonIcon(button as HTMLElement, collapsed, headerLevel);
 };
 
-function setCellCollapse(nbTrack: INotebookTracker, which: number, collapsing: boolean) : number {
+function setCellCollapse(
+  nbTrack: INotebookTracker, 
+  which: number, 
+  collapsing: boolean) 
+  : number {
   if (!nbTrack){
     return which+1;
   }
   if (which >= nbTrack.currentWidget.content.widgets.length){
     console.log(which, 'tried to collapse non-existing cell!');
-    return which+1;
   }
   let cell = nbTrack.currentWidget.content.widgets[which];
   if (!cell) {
-    console.log(which, 'cell invalid');
-    return which+1;
-  }
-  if (cell.isHidden || cell.constructor.name !== "MarkdownCell"){
-    // otherwise collapsing and uncollapsing already hidden stuff can 
-    // cause some funny looking bugs.
-    console.log(which, 'cell hidden or not markdown');
+    console.log(which, 'cell invalid?!');
     return which+1;
   }
   let selectedHeaderInfo = getHeaderInfo(cell);
-  if (!selectedHeaderInfo.isHeader){
-    console.log(which, 'cell not a header');
-    return which+1;
-  }
+  if (cell.isHidden || cell.constructor.name !== "MarkdownCell" || !selectedHeaderInfo.isHeader){
+    // otherwise collapsing and uncollapsing already hidden stuff can 
+    // cause some funny looking bugs.
+    console.log(which, 'cell hidden or not markdown or not a header markdown cell.');
+    /*
+    // in this case, find the nearest parent header and set the collapsed state of that cell. 
+    let parentLoc = findNearestParentHeader(which, nbTrack);
+    if (parentLoc == -1){
+      // no parents
+      return which+1;
+    } else {
+      return setCellCollapse(nbTrack, parentLoc, collapsing);
+    }
+    */
+  }  
   setCollapsedMetadata(cell, collapsing);
   let button = getOrCreateCollapseButton(cell, nbTrack);
   let headerLevel = getHeaderInfo(cell).headerLevel;
@@ -223,11 +244,6 @@ function setCellCollapse(nbTrack: INotebookTracker, which: number, collapsing: b
   ) {
     let subCell = nbTrack.currentWidget.content.widgets[cellNum];
     let subCellHeaderInfo = getHeaderInfo(subCell);
-    //let pos : CodeEditor.IRange = {0,0};
-    //pos.start = 0;
-    //pos.end = 0;
-    //subCell.editor.setSelection(null,);
-    //subCell.inputArea.update();
     if (
       subCellHeaderInfo.isHeader
       && subCellHeaderInfo.headerLevel <= selectedHeaderInfo.headerLevel
@@ -264,7 +280,6 @@ function setCellCollapse(nbTrack: INotebookTracker, which: number, collapsing: b
     console.log(cellNum, 'Uncollapsing Normally.');
     subCell.setHidden(false);
   }
-  //cell.update();
   return cellNum + 1;
 }
 
@@ -273,9 +288,21 @@ function toggleCurrentCellCollapse(nbTrack: INotebookTracker) {
   if (!nbTrack.activeCell) {
     return;
   }
-  // Then toggle!
-  let collapsing = !getCollapsedMetadata(nbTrack.activeCell);
-  setCellCollapse(nbTrack, nbTrack.currentWidget.content.activeCellIndex, collapsing );
+  if (getHeaderInfo(nbTrack.activeCell).isHeader){
+    // Then toggle!
+    let collapsing = !getCollapsedMetadata(nbTrack.activeCell);
+    setCellCollapse(nbTrack, nbTrack.currentWidget.content.activeCellIndex, collapsing );
+  } else {
+    // then toggle parent!
+    let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
+    console.log('nearest parent: ', parentLoc)
+    if (parentLoc == -1) {
+      // no parent, can't be collapsed so nothing to do. 
+      return;
+    }
+    setCellCollapse(nbTrack, parentLoc, 
+      !getCollapsedMetadata(nbTrack.currentWidget.content.widgets[parentLoc]) );
+  }
 }
 
 
