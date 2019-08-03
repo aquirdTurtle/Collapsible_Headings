@@ -13,6 +13,7 @@ import {
 import {
   Cell
 } from '@jupyterlab/cells';
+//import { cloneElement } from 'react';
 
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -76,11 +77,49 @@ function activate(
   })
   nbTrack.widgetAdded.connect(()=>{console.log('nbtrack widget added message seen!',nbTrack.currentWidget.content.widgets.length)});
   nbTrack.currentChanged.connect(()=>{console.log('nbtrack current changed message seen!',nbTrack.currentWidget.content.widgets.length)});
+  //nbTrack.currentWidget.content.activeCellChanged.connect(() => {
   nbTrack.activeCellChanged.connect(() => {
-    console.log('active cell changed.',nbTrack.currentWidget.content.widgets.length);
+    // the code is configured to uncollapse cells when they are selected. This both deals with the case that the user 
+    // arrows into a collapsed area and when the user adds a new cell in a collapsed area. 
+    console.log('active cell changed.', nbTrack.activeCell.isHidden );    
+    let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
+    console.log('nearest parent: ', parentLoc)
+    if (parentLoc == -1) {
+      // no parent, can't be collapsed so nothing to do. 
+      return;
+    }
+    let cell = nbTrack.currentWidget.content.widgets[parentLoc];
+    console.log(cell.inputArea.model.value);
+    if (getCollapsedMetadata(cell)){
+      console.log('parent needs uncollapsing...');
+      // then uncollapse. 
+      setCellCollapse(nbTrack, parentLoc, false );
+    }
     //updateButtons(nbTrack);
   });
 };
+
+
+function findNearestParentHeader(index : number, nbTrack : INotebookTracker) : number {
+  // Finds the nearest header above the given cell. If the cell is a header itself, it does not return itself; 
+  // this can be checked directly by calling functions. 
+  if (index >= nbTrack.currentWidget.content.widgets.length){
+    return -1;
+  }
+  let childHeaderInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[index]);
+  console.log(childHeaderInfo);
+  for (let cellN = index-1; cellN >= 0; cellN-- ){
+    if (cellN < nbTrack.currentWidget.content.widgets.length){
+      let hInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[cellN]);
+      if (hInfo.isHeader && hInfo.headerLevel < childHeaderInfo.headerLevel ){
+        return cellN;
+      };
+    }
+  }
+  // no parent header found.
+  return -1;
+}
+
 
 function updateNotebookCollapsedState(nbTrack: INotebookTracker){
   console.log('Updating Notebook Collapse State...!');
@@ -261,7 +300,7 @@ function setCollapsedMetadata(cell: Cell, data: boolean) {
 
 function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
   if (cell.constructor.name !== "MarkdownCell"){
-    return {isHeader:false, headerLevel:0};
+    return {isHeader:false, headerLevel:7};
   }
   let text = cell.model.value.text;
   const lines = text.split('\n');
@@ -273,7 +312,8 @@ function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
   let match2 = line2 && line2.match(/^([=]{2,}|[-]{2,})/);
   let match3 = line.match(/<h([1-6])>(.*)<\/h\1>/i);
   let isHeader = (match !== null) || (match2 !== undefined && match2 !== null) || (match3 !== null);
-  let level = 0;
+  // There are only 6 levels of markdown headers so this gives one past that. 
+  let level = 7;
   if (match){
     level = match[1].length;
   } else if (match2) {
