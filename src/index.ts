@@ -302,6 +302,8 @@ function toggleCurrentCellCollapse(nbTrack: INotebookTracker) {
     }
     setCellCollapse(nbTrack, parentLoc, 
       !getCollapsedMetadata(nbTrack.currentWidget.content.widgets[parentLoc]) );
+    // otherwise the active cell will still be the now (usually) hidden cell
+    nbTrack.currentWidget.content.activeCellIndex = parentLoc;
   }
 }
 
