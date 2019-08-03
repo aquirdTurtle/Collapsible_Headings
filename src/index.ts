@@ -7,12 +7,13 @@ import {
 } from '@jupyterlab/apputils';
 
 import {
-  INotebookTracker
+  INotebookTracker, NotebookActions
 } from '@jupyterlab/notebook';
 
 import {
   Cell
 } from '@jupyterlab/cells';
+
 
 const plugin: JupyterFrontEndPlugin<void> = {
   activate,
@@ -26,6 +27,7 @@ function activate(
   nbTrack: INotebookTracker,
   palette: ICommandPalette
 ){
+  
   console.log('Collapsible_Headings Extension Active!');
   // Add 3 commands to the command palette
   const command1: string = 'Collapsible_Headings:Toggle_Collapse';
@@ -57,30 +59,45 @@ function activate(
 
   nbTrack.currentChanged.connect(()=>{
     nbTrack.currentWidget.content.model.stateChanged.connect(()=>{
-      console.log('notebook model state change detected.');
+      console.log('notebook model state change detected.', nbTrack.currentWidget.content.widgets.length);
+      if (nbTrack.currentWidget.content.widgets.length > 1){
       // this is a signal that I found that gets called after the cell list has been populated, so possible
       // to initialize these things now.
       updateButtons(nbTrack);
-      updateNotebookCollapsedState(nbTrack);
+      // if I call this direclty then the collapsed input areas don't seem to render properly after uncollapsing.
+      // this seems to allow the input areas to render before being initially collapsed. 
+      setTimeout(()=>{updateNotebookCollapsedState(nbTrack)},10);
+      }
     });
   });
-  nbTrack.activeCellChanged.connect(() => {
+  NotebookActions.executed.connect(() => {
+    console.log('cell executed.');
     updateButtons(nbTrack);
+  })
+  nbTrack.widgetAdded.connect(()=>{console.log('nbtrack widget added message seen!',nbTrack.currentWidget.content.widgets.length)});
+  nbTrack.currentChanged.connect(()=>{console.log('nbtrack current changed message seen!',nbTrack.currentWidget.content.widgets.length)});
+  nbTrack.activeCellChanged.connect(() => {
+    console.log('active cell changed.',nbTrack.currentWidget.content.widgets.length);
+    //updateButtons(nbTrack);
   });
 };
 
 function updateNotebookCollapsedState(nbTrack: INotebookTracker){
-  console.log('Updating Notebook Collapse State');
+  console.log('Updating Notebook Collapse State...!');
+  console.log(nbTrack);
   let nextCellIndex = 0;
   let count = 0;
-  // increment through all the potentially collapsible blocks. 
-  // Put in this 1e6 limit in case sometihng goes wrong to prevent permanent freeze in the while loop.
-  while (nextCellIndex < nbTrack.currentWidget.content.widgets.length && count < 1e6){
-    nextCellIndex = setCellCollapse(
-      nbTrack, nextCellIndex, 
-      getCollapsedMetadata(nbTrack.currentWidget.content.widgets[nextCellIndex]));
-    count += 1;
+  if (nbTrack.currentWidget){
+    // increment through all the potentially collapsible blocks. 
+    // Put in this 1e6 limit in case sometihng goes wrong to prevent permanent freeze in the while loop.
+    while (nextCellIndex < nbTrack.currentWidget.content.widgets.length && count < 1e6){
+      nextCellIndex = setCellCollapse(
+        nbTrack, nextCellIndex, 
+        getCollapsedMetadata(nbTrack.currentWidget.content.widgets[nextCellIndex]));
+      count += 1;
+    }
   }
+
 }
 
 function updateButtons(nbTrack: INotebookTracker){
@@ -90,7 +107,8 @@ function updateButtons(nbTrack: INotebookTracker){
     let subCell = allWidgets[widgetNum];
     let subCellHeaderInfo = getHeaderInfo(subCell);
     if ( subCellHeaderInfo.isHeader ) {
-     addButton(subCell, nbTrack); 
+      addButton(subCell, nbTrack); 
+      console.log('added button.');
     }
   }
 }
@@ -166,6 +184,11 @@ function setCellCollapse(nbTrack: INotebookTracker, which: number, collapsing: b
   ) {
     let subCell = nbTrack.currentWidget.content.widgets[cellNum];
     let subCellHeaderInfo = getHeaderInfo(subCell);
+    //let pos : CodeEditor.IRange = {0,0};
+    //pos.start = 0;
+    //pos.end = 0;
+    //subCell.editor.setSelection(null,);
+    //subCell.inputArea.update();
     if (
       subCellHeaderInfo.isHeader
       && subCellHeaderInfo.headerLevel <= selectedHeaderInfo.headerLevel
@@ -202,6 +225,7 @@ function setCellCollapse(nbTrack: INotebookTracker, which: number, collapsing: b
     console.log(cellNum, 'Uncollapsing Normally.');
     subCell.setHidden(false);
   }
+  //cell.update();
   return cellNum + 1;
 }
 
