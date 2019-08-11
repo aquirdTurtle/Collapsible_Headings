@@ -97,13 +97,11 @@ function activate(
     // arrows into a collapsed area and when the user adds a new cell in a collapsed area. 
     console.log('active cell changed.', nbTrack.activeCell.isHidden );    
     let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
-    console.log('nearest parent: ', parentLoc)
     if (parentLoc == -1) {
       // no parent, can't be collapsed so nothing to do. 
       return;
     }
     let cell = nbTrack.currentWidget.content.widgets[parentLoc];
-    console.log(cell.inputArea.model.value);
     if (getCollapsedMetadata(cell)){
       console.log('parent needs uncollapsing...');
       // then uncollapse. 
@@ -120,7 +118,6 @@ function findNearestParentHeader(index : number, nbTrack : INotebookTracker) : n
     return -1;
   }
   let childHeaderInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[index]);
-  console.log(childHeaderInfo);
   for (let cellN = index-1; cellN >= 0; cellN-- ){
     if (cellN < nbTrack.currentWidget.content.widgets.length){
       let hInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[cellN]);
@@ -129,14 +126,13 @@ function findNearestParentHeader(index : number, nbTrack : INotebookTracker) : n
       };
     }
   }
-  // no parent header found.
+  // else no parent header found.
   return -1;
 }
 
 
 function updateNotebookCollapsedState(nbTrack: INotebookTracker){
   console.log('Updating Notebook Collapse State...!');
-  console.log(nbTrack);
   let nextCellIndex = 0;
   let count = 0;
   if (nbTrack.currentWidget){
@@ -149,7 +145,6 @@ function updateNotebookCollapsedState(nbTrack: INotebookTracker){
       count += 1;
     }
   }
-
 }
 
 function updateButtons(nbTrack: INotebookTracker){
@@ -160,7 +155,9 @@ function updateButtons(nbTrack: INotebookTracker){
     let subCellHeaderInfo = getHeaderInfo(subCell);
     if ( subCellHeaderInfo.isHeader ) {
       addButton(subCell, nbTrack); 
-      console.log('added button.');
+    }
+    else{
+      removeButton(subCell);
     }
   }
 }
@@ -196,6 +193,13 @@ function addButton(cell: Cell, nbTrack: INotebookTracker) {
   setButtonIcon(button as HTMLElement, collapsed, headerLevel);
 };
 
+function removeButton(cell: Cell) {
+  if (cell.promptNode.getElementsByClassName("toc-button").length != 0){
+    console.log('Removing Button.')
+    cell.promptNode.removeChild(cell.promptNode.getElementsByClassName("toc-button")[0]);
+  }
+}
+
 function setCellCollapse(
   nbTrack: INotebookTracker, 
   which: number, 
@@ -217,16 +221,6 @@ function setCellCollapse(
     // otherwise collapsing and uncollapsing already hidden stuff can 
     // cause some funny looking bugs.
     console.log(which, 'cell hidden or not markdown or not a header markdown cell.');
-    /*
-    // in this case, find the nearest parent header and set the collapsed state of that cell. 
-    let parentLoc = findNearestParentHeader(which, nbTrack);
-    if (parentLoc == -1){
-      // no parents
-      return which+1;
-    } else {
-      return setCellCollapse(nbTrack, parentLoc, collapsing);
-    }
-    */
   }  
   setCollapsedMetadata(cell, collapsing);
   let button = getOrCreateCollapseButton(cell, nbTrack);
@@ -295,7 +289,6 @@ function toggleCurrentCellCollapse(nbTrack: INotebookTracker) {
   } else {
     // then toggle parent!
     let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
-    console.log('nearest parent: ', parentLoc)
     if (parentLoc == -1) {
       // no parent, can't be collapsed so nothing to do. 
       return;
