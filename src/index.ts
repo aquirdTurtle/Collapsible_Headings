@@ -109,7 +109,7 @@ function activate(
   nbTrack.activeCellChanged.connect(() => {
     // the code is configured to uncollapse cells when they are selected. This both deals with the case that the user 
     // arrows into a collapsed area and when the user adds a new cell in a collapsed area. 
-    console.log('active cell changed.', nbTrack.activeCell.isHidden );    
+    console.log('active cell changed.');    
     let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
     if (parentLoc == -1) {
       // no parent, can't be collapsed so nothing to do. 
@@ -389,9 +389,10 @@ function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
   let match = line.match(/^([#]{1,6}) (.*)/);
   let match2 = line2 && line2.match(/^([=]{2,}|[-]{2,})/);
   let match3 = line.match(/<h([1-6])>(.*)<\/h\1>/i);
-  let isHeader = (match !== null) || (match2 !== undefined && match2 !== null) || (match3 !== null);
+  let isHeader = ((match !== null) || (match2 !== undefined && match2 !== null && Boolean(match2) !== false) 
+                || (match3 !== null));
   // There are only 6 levels of markdown headers so this gives one past that. 
-  let level = 7;
+  let level = 7;  
   if (match){
     level = match[1].length;
   } else if (match2) {
