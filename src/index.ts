@@ -39,7 +39,7 @@ function activate(
   });
   const command2: string = 'Collapsible_Headings:Manually_Update_Collapse_Buttons';
   app.commands.addCommand(command2, {
-    label: 'Refresh Update Collapse Buttons',
+    label: 'Refresh Collapse Buttons',
     execute: () => { updateButtons(nbTrack); }
   });
   const command3: string = 'Collapsible_Headings:Manually_Update_Notebook_Collapse_State';
@@ -47,6 +47,17 @@ function activate(
     label: 'Refresh Notebook Collapse State',
     execute: () => { updateNotebookCollapsedState(nbTrack); }
   });
+  const command4: string = 'Collapsible_Headings:Collapse_All';
+  app.commands.addCommand(command4, {
+    label: 'Collapse All Cells',
+    execute: () => { collapseAll(nbTrack); }
+  });
+  const command5: string = 'Collapsible_Headings:UnCollapse_All';
+  app.commands.addCommand(command5, {
+    label: 'Un-Collapse All Cells',
+    execute: () => { uncollapseAll(nbTrack); }
+  });
+
 
   app.commands.addKeyBinding({
     command: command1,
@@ -58,6 +69,8 @@ function activate(
   palette.addItem({command:command1, category: 'Collapsible Headings Extension'});
   palette.addItem({command:command2, category: 'Collapsible Headings Extension'});
   palette.addItem({command:command3, category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command4, category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command5, category: 'Collapsible Headings Extension'});
 
   nbTrack.currentChanged.connect(()=>{
     nbTrack.currentWidget.content.model.stateChanged.connect(()=>{
@@ -90,7 +103,8 @@ function activate(
     );
     */
   });
-  nbTrack.currentChanged.connect(()=>{console.log('nbtrack current changed message seen!',nbTrack.currentWidget.content.widgets.length)});
+  nbTrack.currentChanged.connect(()=>{console.log('nbtrack current changed message seen!',
+                                 nbTrack.currentWidget.content.widgets.length)});
   //nbTrack.currentWidget.content.activeCellChanged.connect(() => {
   nbTrack.activeCellChanged.connect(() => {
     // the code is configured to uncollapse cells when they are selected. This both deals with the case that the user 
@@ -109,6 +123,45 @@ function activate(
     }
   });
 };
+
+
+function collapseAll(nbTrack : INotebookTracker){
+  console.log('Collapsing all header cells!');
+  if (nbTrack.currentWidget){
+    for (let cellI = 0; cellI < nbTrack.currentWidget.content.widgets.length; cellI++){
+      let cell = nbTrack.currentWidget.content.widgets[cellI];
+      if (getHeaderInfo(cell).isHeader){
+        setCellCollapse(nbTrack, cellI, true );
+        // setCellCollapse tries to be smart and not change metadata of hidden cells.
+        // that's not the desired behavior of this function though, which wants to act
+        // as if the user clicked collapse on every level. 
+        setCollapsedMetadata(cell, true);
+        let button = getOrCreateCollapseButton(cell, nbTrack);
+        let headerLevel = getHeaderInfo(cell).headerLevel;
+        setButtonIcon(button as HTMLElement, true, headerLevel);
+      }
+    }
+  }
+  updateNotebookCollapsedState(nbTrack);
+}
+
+function uncollapseAll(nbTrack : INotebookTracker){
+  console.log('Un-Collapsing all header cells!');
+  if (nbTrack.currentWidget){
+    for (let cellI = 0; cellI < nbTrack.currentWidget.content.widgets.length; cellI++){
+      let cell = nbTrack.currentWidget.content.widgets[cellI];
+      if (getHeaderInfo(cell).isHeader){
+        setCellCollapse(nbTrack, cellI, false );
+        // similar to collapseAll.
+        setCollapsedMetadata(cell, false);
+        let button = getOrCreateCollapseButton(cell, nbTrack);
+        let headerLevel = getHeaderInfo(cell).headerLevel;
+        setButtonIcon(button as HTMLElement, false, headerLevel);
+      }
+    }
+  }
+  updateNotebookCollapsedState(nbTrack);
+}
 
 
 function findNearestParentHeader(index : number, nbTrack : INotebookTracker) : number {
@@ -142,9 +195,10 @@ function updateNotebookCollapsedState(nbTrack: INotebookTracker){
       nextCellIndex = setCellCollapse(
         nbTrack, nextCellIndex, 
         getCollapsedMetadata(nbTrack.currentWidget.content.widgets[nextCellIndex]));
-      count += 1;
+      count += 1;  
     }
   }
+  console.log('(fin)');
 }
 
 function updateButtons(nbTrack: INotebookTracker){
@@ -163,6 +217,7 @@ function updateButtons(nbTrack: INotebookTracker){
 }
 
 function setButtonIcon(button: HTMLElement, collapsed: boolean, headerLevel: number) {
+  console.log('Adding Button!');
   if (collapsed) {
     button.style.background = "var(--jp-icon-caretright) no-repeat center";
   } else {
@@ -221,6 +276,7 @@ function setCellCollapse(
     // otherwise collapsing and uncollapsing already hidden stuff can 
     // cause some funny looking bugs.
     console.log(which, 'cell hidden or not markdown or not a header markdown cell.');
+    return which+1;
   }  
   setCollapsedMetadata(cell, collapsing);
   let button = getOrCreateCollapseButton(cell, nbTrack);
