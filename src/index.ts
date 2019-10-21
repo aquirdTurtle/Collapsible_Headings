@@ -432,9 +432,13 @@ function uncollapseCell(nbTrack: INotebookTracker) {
       // no parent, can't be collapsed so nothing to do. 
       return;
     }
-    setCellCollapse(nbTrack, parentLoc, false );
-    // otherwise the active cell will still be the now (usually) hidden cell
-    nbTrack.currentWidget.content.activeCellIndex = parentLoc;
+    // not sure this should ever be reached... suggests user had selection on collapsed cell.
+    let collapsed = getCollapsedMetadata(nbTrack.currentWidget.content.widgets[parentLoc]);
+    if (collapsed){
+      setCellCollapse(nbTrack, parentLoc, false );
+      // otherwise the active cell will still be the now (usually) hidden cell
+      nbTrack.currentWidget.content.activeCellIndex = parentLoc;  
+    }
   }
 }
 
