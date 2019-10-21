@@ -313,10 +313,12 @@ function setCellCollapse(
     return which+1;
   }
   let selectedHeaderInfo = getHeaderInfo(cell);
+  
   if (cell.isHidden || cell.constructor.name !== "MarkdownCell" || !selectedHeaderInfo.isHeader){
     // otherwise collapsing and uncollapsing already hidden stuff can 
     // cause some funny looking bugs.
-    console.log(which, 'cell hidden or not markdown or not a header markdown cell.');
+    console.log(which, 'cell hidden or not markdown or not a header markdown cell.', 
+                cell.isHidden, cell.constructor.name, selectedHeaderInfo.isHeader);
     return which+1;
   }  
   setCollapsedMetadata(cell, collapsing);
@@ -376,6 +378,7 @@ function setCellCollapse(
 
 
 function toggleCurrentCellCollapse(nbTrack: INotebookTracker) {
+  console.log(nbTrack.activeCell)
   if (!nbTrack.activeCell) {
     return;
   }
