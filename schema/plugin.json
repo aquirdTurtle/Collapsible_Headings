@@ -1,0 +1,42 @@
+{
+  "jupyter.lab.setting-icon-class": "jp-NotebookIcon",
+  "jupyter.lab.setting-icon-label": "Notebook",
+  "title": "Collapsible Headings Settings",
+  "description": "Collapsible Headings Settings",
+  "jupyter.lab.shortcuts": [
+    {
+      "command": "Collapsible_Headings:Toggle_Collapse",
+      "keys": ["Accel Q"],
+      "selector": ".jp-mod-commandMode"
+    },
+    {
+      "command": "Collapsible_Headings:Toggle_Collapse",
+      "keys": ["T"],
+      "selector": ".jp-mod-commandMode"
+    },
+    {
+      "command": "Collapsible_Headings:Add_Header_Above",
+      "keys": ["Shift A"],
+      "selector": ".jp-mod-commandMode"
+    },
+    {
+      "command": "Collapsible_Headings:Add_Header_Below",
+      "keys": ["Shift B"],
+      "selector": ".jp-mod-commandMode"
+    },
+    {
+      "command": "Collapsible_Headings:Uncollapse_Header",
+      "keys": ["ArrowRight"],
+      "selector": ".jp-mod-commandMode"
+    },
+    {
+      "command": "Collapsible_Headings:Collapse_Header",
+      "keys": ["ArrowLeft"],
+      "selector": ".jp-mod-commandMode"
+    }
+  ],
+  "properties": {
+  },
+  "additionalProperties": false,
+  "type": "object"
+}

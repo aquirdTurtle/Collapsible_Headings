@@ -1,5 +1,7 @@
 import {
-  JupyterFrontEnd, JupyterFrontEndPlugin
+  JupyterFrontEnd, 
+  //JupyterLabPlugin,
+  JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
 import {
@@ -13,23 +15,30 @@ import {
 import {
   Cell
 } from '@jupyterlab/cells';
-//import { CodeEditor } from '@jupyterlab/codeeditor';
-//import { cloneElement } from 'react';
 
+import { ISettingRegistry } from '@jupyterlab/coreutils';
 
+//const plugin: JupyterFrontEndPlugin<void> = {
 const plugin: JupyterFrontEndPlugin<void> = {
   activate,
-  requires: [INotebookTracker, ICommandPalette],
-  id: 'Colappsible_Headings:buttonPlugin',
+  requires: [INotebookTracker, ICommandPalette, ISettingRegistry],
+  //id: 'Colappsible_Headings:buttonPlugin',
+  id: '@aquirdturtle/collapsible_headings:plugin',
   autoStart: true
 };
 
-function activate(
+function activate (
   app: JupyterFrontEnd,
   nbTrack: INotebookTracker,
-  palette: ICommandPalette
+  palette: ICommandPalette,
+  settings: ISettingRegistry
 ){
-  
+  console.log('1');
+  //let res = settings.load(plugin.id);
+  console.log('SETTINGS REGISTRY:   ', settings)
+  settings.load(plugin.id)
+  .then(resSettings => console.log('LOAD SETTINGS: ', resSettings));
+  //console.log('LOAD RESULT: ', res)
   console.log('Collapsible_Headings Extension Active!');
   // Add 3 commands to the command palette
   const command1: string = 'Collapsible_Headings:Toggle_Collapse';
@@ -57,13 +66,25 @@ function activate(
     label: 'Un-Collapse All Cells',
     execute: () => { uncollapseAll(nbTrack); }
   });
-
-
-  app.commands.addKeyBinding({
-    command: command1,
-    args: {},
-    keys: ['Accel Q'],
-    selector: '.jp-Notebook'
+  const command6: string = 'Collapsible_Headings:Add_Header_Above';
+  app.commands.addCommand(command6, {
+    label: 'Add Header Above',
+    execute: () => { addHeaderAbove(nbTrack); }
+  });
+  const command7: string = 'Collapsible_Headings:Add_Header_Below';
+  app.commands.addCommand(command7, {
+    label: 'Add Header Below',
+    execute: () => { addHeaderBelow(nbTrack); }
+  });
+  const command8: string = 'Collapsible_Headings:Uncollapse_Header';
+  app.commands.addCommand(command8, {
+    label: 'Add Header Below',
+    execute: () => { uncollapseCell(nbTrack); }
+  });
+  const command9: string = 'Collapsible_Headings:Collapse_Header';
+  app.commands.addCommand(command9, {
+    label: 'Add Header Below',
+    execute: () => { collapseCell(nbTrack); }
   });
   //let test : IPaletteItem = {command, category: 'Collapsible Headings'};
   palette.addItem({command:command1, category: 'Collapsible Headings Extension'});
@@ -71,6 +92,8 @@ function activate(
   palette.addItem({command:command3, category: 'Collapsible Headings Extension'});
   palette.addItem({command:command4, category: 'Collapsible Headings Extension'});
   palette.addItem({command:command5, category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command6, category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command7, category: 'Collapsible Headings Extension'});
 
   nbTrack.currentChanged.connect(()=>{
     nbTrack.currentWidget.content.model.stateChanged.connect(()=>{
@@ -161,6 +184,24 @@ function uncollapseAll(nbTrack : INotebookTracker){
     }
   }
   updateNotebookCollapsedState(nbTrack);
+}
+
+
+function findNextParentHeader(index : number, nbTrack : INotebookTracker){
+  if (index >= nbTrack.currentWidget.content.widgets.length){
+    return -1;
+  }
+  let childHeaderInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[index]);
+  console.log('child', childHeaderInfo)
+  for (let cellN = index+1; cellN < nbTrack.currentWidget.content.widgets.length; cellN++ ){
+    let hInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[cellN]);
+    console.log(hInfo)
+    if (hInfo.isHeader && hInfo.headerLevel <= childHeaderInfo.headerLevel ){
+      return cellN;
+    }
+  }
+  // else no parent header found. return the index of the last cell
+  return nbTrack.currentWidget.content.widgets.length-1;
 }
 
 
@@ -356,6 +397,47 @@ function toggleCurrentCellCollapse(nbTrack: INotebookTracker) {
   }
 }
 
+function collapseCell(nbTrack: INotebookTracker) {
+  if (!nbTrack.activeCell) {
+    return;
+  }
+  if (getHeaderInfo(nbTrack.activeCell).isHeader){
+    // Then Collapse!
+    setCellCollapse(nbTrack, nbTrack.currentWidget.content.activeCellIndex, true );
+  } else {
+    // then Collapse parent!
+    let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
+    if (parentLoc == -1) {
+      // no parent, can't be collapsed so nothing to do. 
+      return;
+    }
+    setCellCollapse(nbTrack, parentLoc, true );
+    // otherwise the active cell will still be the now (usually) hidden cell
+    nbTrack.currentWidget.content.activeCellIndex = parentLoc;
+  }
+}
+
+
+function uncollapseCell(nbTrack: INotebookTracker) {
+  if (!nbTrack.activeCell) {
+    return;
+  }
+  if (getHeaderInfo(nbTrack.activeCell).isHeader){
+    // Then uncollapse!
+    setCellCollapse(nbTrack, nbTrack.currentWidget.content.activeCellIndex, false );
+  } else {
+    // then uncollapse parent!
+    let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
+    if (parentLoc == -1) {
+      // no parent, can't be collapsed so nothing to do. 
+      return;
+    }
+    setCellCollapse(nbTrack, parentLoc, false );
+    // otherwise the active cell will still be the now (usually) hidden cell
+    nbTrack.currentWidget.content.activeCellIndex = parentLoc;
+  }
+}
+
 
 function getCollapsedMetadata(cell: Cell) : boolean {
   let metadata = cell.model.metadata;
@@ -375,6 +457,50 @@ function setCollapsedMetadata(cell: Cell, data: boolean) {
   metadata.set('Collapsed', data ? 'true' : 'false');
 }
 
+function addHeaderBelow(nbTrack : INotebookTracker){
+  if (!nbTrack.activeCell){
+    return;
+  }
+  let headerInfo = getHeaderInfo(nbTrack.activeCell);
+  if (!headerInfo.isHeader){
+    let parentHeaderIndex = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack)
+    headerInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[parentHeaderIndex]);  
+  }
+  let res = findNextParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack)
+  if (headerInfo.isHeader == false) {
+    console.log('Finding nearest parent header failed!');
+  }
+  nbTrack.currentWidget.content.activeCellIndex = res;
+  NotebookActions.insertAbove(nbTrack.currentWidget.content);
+  NotebookActions.setMarkdownHeader(nbTrack.currentWidget.content, headerInfo.headerLevel);
+  NotebookActions.changeCellType(nbTrack.currentWidget.content, "markdown");
+  nbTrack.activeCell.editor.setSelection({start: {line: 0, column: headerInfo.headerLevel+1}, end: {line: 0, column: 10}})
+  nbTrack.activeCell.editor.focus()
+  console.log('Added Header Cell Below Current Selection.');
+}
+
+function addHeaderAbove(nbTrack : INotebookTracker)  {
+  if (!nbTrack.activeCell)
+  {
+    return;
+  }
+  let headerInfo = getHeaderInfo(nbTrack.activeCell);
+  if (!headerInfo.isHeader){
+    let res = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack)
+    headerInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[res]);
+  }
+  if (headerInfo.isHeader == false) {
+    console.log('Finding nearest parent header failed!');
+  }
+  NotebookActions.insertAbove(nbTrack.currentWidget.content);
+  NotebookActions.setMarkdownHeader(nbTrack.currentWidget.content, headerInfo.headerLevel);
+  NotebookActions.changeCellType(nbTrack.currentWidget.content, "markdown");
+  console.log(nbTrack.activeCell)
+  nbTrack.activeCell.editor.setSelection({start: {line: 0, column: headerInfo.headerLevel+1}, end: {line: 0, column: 10}})
+  nbTrack.activeCell.editor.focus()
+  console.log('Added Header Cell Above Current Selection.');
+}
+
 
 function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
   if (cell.constructor.name !== "MarkdownCell"){
@@ -388,7 +514,9 @@ function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
   // from the wonderful existing table of contents extension <3
   let match = line.match(/^([#]{1,6}) (.*)/);
   let match2 = line2 && line2.match(/^([=]{2,}|[-]{2,})/);
-  let match3 = line.match(/<h([1-6])>(.*)<\/h\1>/i);
+  //let match3 = line.match(/<h([1-6])>(.*)<\/h\1>/i);
+  let match3 = line.match(/<h([1-6])(.*)>(.*)<\/h\1>/i);
+  //console.log(line, match, match2, match3)
   let isHeader = ((match !== null) || (match2 !== undefined && match2 !== null && Boolean(match2) !== false) 
                 || (match3 !== null));
   // There are only 6 levels of markdown headers so this gives one past that. 
