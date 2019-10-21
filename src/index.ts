@@ -314,7 +314,7 @@ function setCellCollapse(
   }
   let selectedHeaderInfo = getHeaderInfo(cell);
   
-  if (cell.isHidden || cell.constructor.name !== "MarkdownCell" || !selectedHeaderInfo.isHeader){
+  if (cell.isHidden || (cell.constructor.name !== "MarkdownCell" && cell.constructor.name !== "xe") || !selectedHeaderInfo.isHeader){
     // otherwise collapsing and uncollapsing already hidden stuff can 
     // cause some funny looking bugs.
     console.log(which, 'cell hidden or not markdown or not a header markdown cell.', 
@@ -510,7 +510,7 @@ function addHeaderAbove(nbTrack : INotebookTracker)  {
 
 
 function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
-  if (cell.constructor.name !== "MarkdownCell"){
+  if ((cell.constructor.name !== "MarkdownCell" && cell.constructor.name !== "xe")){
     return {isHeader:false, headerLevel:7};
   }
   let text = cell.model.value.text;
