@@ -10,6 +10,7 @@ In emulating the original extension, this extension now supports the following s
 - "Right-Arrow" to *uncollapse* the selected current header section
 - "Shift-A" to add a header above the current cell
 - "Shift-B" to add a header below the current header section
+
 All shortcuts only work in command mode and are editable by the user by going to Settings -> Advanced Settings Editor -> Keyboard Shortcuts and editing the shortcuts there.
 
 ![Alt Text](Demo2.gif)
