@@ -2,7 +2,15 @@
 
 Make headings collapsible like the old Jupyter notebook extension and like Mathematica notebooks.
 
-This is an early version of this idea. A selected header cell (i.e. markdown cell starting with some number of "#") can be collapsed / uncollapsed by clicking on the caret icon created to the left of header cells, by using the **ctrl Q** hotkey (currently hard-coded), or by explicitly calling the collapse command in the commands utility on the left area of jupyterlab.
+A selected header cell (i.e. markdown cell starting with some number of "#") can be collapsed / uncollapsed by clicking on the caret icon created to the left of header cells or by using a shortcut.
+
+In emulating the original extension, this extension now supports the following shortcuts:
+- "T" or "Accel Q" shortcuts to toggle Collapse
+- "Left-Arrow" to collapse the selected current header section
+- "Right-Arrow" to *uncollapse* the selected current header section
+- "Shift-A" to add a header above the current cell
+- "Shift-B" to add a header below the current header section
+All shortcuts only work in command mode and are editable by the user by going to Settings -> Advanced Settings Editor -> Keyboard Shortcuts and editing the shortcuts there.
 
 ![Alt Text](Demo2.gif)
 
