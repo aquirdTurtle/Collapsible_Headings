@@ -7,32 +7,32 @@
     {
       "command": "Collapsible_Headings:Toggle_Collapse",
       "keys": ["Accel Q"],
-      "selector": ".jp-mod-commandMode"
+      "selector": ".jp-Notebook:focus"
     },
     {
       "command": "Collapsible_Headings:Toggle_Collapse",
       "keys": ["T"],
-      "selector": ".jp-mod-commandMode"
+      "selector": ".jp-Notebook:focus"
     },
     {
       "command": "Collapsible_Headings:Add_Header_Above",
       "keys": ["Shift A"],
-      "selector": ".jp-mod-commandMode"
+      "selector": ".jp-Notebook:focus"
     },
     {
       "command": "Collapsible_Headings:Add_Header_Below",
       "keys": ["Shift B"],
-      "selector": ".jp-mod-commandMode"
+      "selector": ".jp-Notebook:focus"
     },
     {
       "command": "Collapsible_Headings:Uncollapse_Header",
       "keys": ["ArrowRight"],
-      "selector": ".jp-mod-commandMode"
+      "selector": ".jp-Notebook:focus"
     },
     {
       "command": "Collapsible_Headings:Collapse_Header",
       "keys": ["ArrowLeft"],
-      "selector": ".jp-mod-commandMode"
+      "selector": ".jp-Notebook:focus"
     }
   ],
   "properties": {
