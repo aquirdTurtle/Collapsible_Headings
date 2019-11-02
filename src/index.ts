@@ -1,6 +1,5 @@
 import {
   JupyterFrontEnd, 
-  //JupyterLabPlugin,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
@@ -18,11 +17,9 @@ import {
 
 import { ISettingRegistry } from '@jupyterlab/coreutils';
 
-//const plugin: JupyterFrontEndPlugin<void> = {
 const plugin: JupyterFrontEndPlugin<void> = {
   activate,
   requires: [INotebookTracker, ICommandPalette, ISettingRegistry],
-  //id: 'Colappsible_Headings:buttonPlugin',
   id: '@aquirdturtle/collapsible_headings:plugin',
   autoStart: true
 };
@@ -33,14 +30,11 @@ function activate (
   palette: ICommandPalette,
   settings: ISettingRegistry
 ){
-  console.log('1');
-  //let res = settings.load(plugin.id);
   console.log('SETTINGS REGISTRY:   ', settings)
   settings.load(plugin.id)
   .then(resSettings => console.log('LOAD SETTINGS: ', resSettings));
-  //console.log('LOAD RESULT: ', res)
   console.log('Collapsible_Headings Extension Active!');
-  // Add 3 commands to the command palette
+
   const command1: string = 'Collapsible_Headings:Toggle_Collapse';
   app.commands.addCommand(command1, {
     label: 'Toggle Collapse',
@@ -86,7 +80,6 @@ function activate (
     label: 'Add Header Below',
     execute: () => { collapseCell(nbTrack); }
   });
-  //let test : IPaletteItem = {command, category: 'Collapsible Headings'};
   palette.addItem({command:command1, category: 'Collapsible Headings Extension'});
   palette.addItem({command:command2, category: 'Collapsible Headings Extension'});
   palette.addItem({command:command3, category: 'Collapsible Headings Extension'});
@@ -510,7 +503,14 @@ function addHeaderAbove(nbTrack : INotebookTracker)  {
 
 
 function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
-  if ((cell.constructor.name !== "MarkdownCell" && cell.constructor.name !== "xe")){
+  let isMarkdown = false;
+  for (let classInc=0; classInc < cell.node.classList.length; classInc++){
+    if (cell.node.classList[classInc] == 'jp-MarkdownCell'){
+      isMarkdown = true;
+    } 
+  }
+  console.log('IsMarkdown: ', isMarkdown, cell.node.classList);
+  if (!isMarkdown){
     return {isHeader:false, headerLevel:7};
   }
   let text = cell.model.value.text;
