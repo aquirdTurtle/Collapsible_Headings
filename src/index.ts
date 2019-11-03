@@ -525,8 +525,20 @@ function collapseCell(nbTrack: INotebookTracker) {
     return;
   }
   if (getHeaderInfo(nbTrack.activeCell).isHeader){
-    // Then Collapse!
-    setCellCollapse(nbTrack, nbTrack.currentWidget.content.activeCellIndex, true );
+    if (getCollapsedMetadata(nbTrack.activeCell)){
+      // Then move to nearest parent. Same behavior as the old nb extension. 
+      // Allows quick collapsing up the chain by <- <- <- presses if <- is a hotkey for this cmd.
+      let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
+      if (parentLoc == -1) {
+        // no parent, stop going up the chain.
+        return;
+      }
+      nbTrack.currentWidget.content.activeCellIndex = parentLoc;  
+    }
+    else{
+      // Then Collapse!
+      setCellCollapse(nbTrack, nbTrack.currentWidget.content.activeCellIndex, true );
+    }
   } else {
     // then Collapse parent!
     let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
