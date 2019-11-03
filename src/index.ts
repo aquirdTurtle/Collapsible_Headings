@@ -30,102 +30,125 @@ function activate (
   palette: ICommandPalette,
   settings: ISettingRegistry
 ){
-  console.log('SETTINGS REGISTRY:   ', settings)
   settings.load(plugin.id)
   .then(resSettings => console.log('LOAD SETTINGS: ', resSettings));
   console.log('Collapsible_Headings Extension Active!');
 
+  
   const command1: string = 'Collapsible_Headings:Toggle_Collapse';
   app.commands.addCommand(command1, {
     label: 'Toggle Collapse',
     execute: () => { toggleCurrentCellCollapse(nbTrack); }
   });
+  
   const command2: string = 'Collapsible_Headings:Manually_Update_Collapse_Buttons';
   app.commands.addCommand(command2, {
     label: 'Refresh Collapse Buttons',
     execute: () => { updateButtons(nbTrack); }
   });
+  
   const command3: string = 'Collapsible_Headings:Manually_Update_Notebook_Collapse_State';
   app.commands.addCommand(command3, {
     label: 'Refresh Notebook Collapse State',
     execute: () => { updateNotebookCollapsedState(nbTrack); }
   });
+
   const command4: string = 'Collapsible_Headings:Collapse_All';
   app.commands.addCommand(command4, {
     label: 'Collapse All Cells',
     execute: () => { collapseAll(nbTrack); }
   });
+  
   const command5: string = 'Collapsible_Headings:UnCollapse_All';
   app.commands.addCommand(command5, {
     label: 'Un-Collapse All Cells',
     execute: () => { uncollapseAll(nbTrack); }
   });
+  
   const command6: string = 'Collapsible_Headings:Add_Header_Above';
   app.commands.addCommand(command6, {
     label: 'Add Header Above',
     execute: () => { addHeaderAbove(nbTrack); }
   });
+  
   const command7: string = 'Collapsible_Headings:Add_Header_Below';
   app.commands.addCommand(command7, {
     label: 'Add Header Below',
     execute: () => { addHeaderBelow(nbTrack); }
   });
+  
   const command8: string = 'Collapsible_Headings:Uncollapse_Header';
   app.commands.addCommand(command8, {
     label: 'Add Header Below',
     execute: () => { uncollapseCell(nbTrack); }
   });
+  
   const command9: string = 'Collapsible_Headings:Collapse_Header';
   app.commands.addCommand(command9, {
     label: 'Add Header Below',
     execute: () => { collapseCell(nbTrack); }
   });
-  palette.addItem({command:command1, category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command2, category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command3, category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command4, category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command5, category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command6, category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command7, category: 'Collapsible Headings Extension'});
+
+  const command10: string = 'Collapsible_Headings:HandleUp';
+  app.commands.addCommand(command10, {
+    label: 'Handle Up Arrow',
+    execute: () => { handleUp(nbTrack); }
+  });
+
+  const command11: string = 'Collapsible_Headings:HandleDown';
+  app.commands.addCommand(command11, {  
+    label: 'Handle Down Arrow',
+    execute: () => { handleDown(nbTrack); }
+  });
+
+  palette.addItem({command:command1,  category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command2,  category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command3,  category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command4,  category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command5,  category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command6,  category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command7,  category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command8,  category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command9,  category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command10, category: 'Collapsible Headings Extension'});
+  palette.addItem({command:command11, category: 'Collapsible Headings Extension'});
 
   nbTrack.currentChanged.connect(()=>{
     nbTrack.currentWidget.content.model.stateChanged.connect(()=>{
-      console.log('notebook model state change detected.', nbTrack.currentWidget.content.widgets.length);
+      //console.log('notebook model state change detected.', nbTrack.currentWidget.content.widgets.length);
       if (nbTrack.currentWidget.content.widgets.length > 1){
-      // this is a signal that I found that gets called after the cell list has been populated, so possible
-      // to initialize these things now.
-      updateButtons(nbTrack);
-      // if I call this direclty then the collapsed input areas don't seem to render properly after uncollapsing.
-      // this seems to allow the input areas to render before being initially collapsed. 
-      setTimeout(()=>{updateNotebookCollapsedState(nbTrack)},10);
+        // this is a signal that I found that gets called after the cell list has been populated, so possible
+        // to initialize these things now.
+        updateButtons(nbTrack);
+        // if I call this direclty then the collapsed input areas don't seem to render properly after uncollapsing.
+        // this seems to allow the input areas to render before being initially collapsed. 
+        setTimeout(()=>{updateNotebookCollapsedState(nbTrack)},10);
       }
     });
   });
   NotebookActions.executed.connect(() => {
-    console.log('cell executed. Updating buttons.');
+    console.log('Cell executed. Updating buttons.');
     updateButtons(nbTrack);
   })
-  nbTrack.widgetAdded.connect(()=>{
-    console.log('nbtrack widget added message seen!',nbTrack.currentWidget.content.widgets.length);
-    /*
-    nbTrack.currentWidget.content.model.contentChanged.connect(
-      ()=>{console.log('nbTrack.currentWidget.content.model.contentChanged')}
-      );
-    nbTrack.currentWidget.content.model.cells.changed.connect(
-      ()=>{console.log('nbTrack.currentWidget.content.model.cells.changed')}
-      );
-    nbTrack.currentWidget.content.model.stateChanged.connect(
-      ()=>{console.log('nbTrack.currentWidget.content.model.cells.changed')}
-    );
-    */
-  });
-  nbTrack.currentChanged.connect(()=>{console.log('nbtrack current changed message seen!',
-                                 nbTrack.currentWidget.content.widgets.length)});
-  //nbTrack.currentWidget.content.activeCellChanged.connect(() => {
+  // for some reason if I don't do this with a timeout, setting these bindings seems to fail *sometimes* 
+  // and the arrows invoke these commands
+  setTimeout(()=>{ app.commands.addKeyBinding({
+    command: command10,
+    args: {},
+    keys: ['ArrowUp'],
+    selector: '.jp-Notebook:focus'
+  });}, 1000)
+  setTimeout(()=>{ app.commands.addKeyBinding({
+    command: command11,
+    args: {},
+    keys: ['ArrowDown'],
+    selector: '.jp-Notebook:focus'
+  });}, 1000);
+  
   nbTrack.activeCellChanged.connect(() => {
     // the code is configured to uncollapse cells when they are selected. This both deals with the case that the user 
     // arrows into a collapsed area and when the user adds a new cell in a collapsed area. 
-    console.log('active cell changed.');    
+    console.log('active cell changed.');
     let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
     if (parentLoc == -1) {
       // no parent, can't be collapsed so nothing to do. 
@@ -138,8 +161,101 @@ function activate (
       setCellCollapse(nbTrack, parentLoc, false );
     }
   });
+  /*
+  app.commands.addKeyBinding({
+    command: command10,
+    args: {},
+    keys: ['ArrowUp'],
+    selector: '.jp-Notebook:focus'
+  });
+  app.commands.addKeyBinding({
+    command: command11,
+    args: {},
+    keys: ['ArrowDown'],
+    selector: '.jp-Notebook:focus'
+  });*/
 };
 
+function handleUp(nbTrack : INotebookTracker){
+  console.log('Handling Up Arrow!');
+  if (nbTrack.currentWidget.content.activeCellIndex == 0){
+    return;
+  }
+  let newIndex = nbTrack.currentWidget.content.activeCellIndex - 1;
+  let newPotentialActiveCell = nbTrack.currentWidget.content.widgets[newIndex];
+  let isHidden = newPotentialActiveCell.isHidden;
+  if (isHidden){
+    let parentLoc = findNearestUncollapsedUpwards(newIndex, nbTrack);
+    if (parentLoc == -1) {
+      // no parent, can't be collapsed so nothing to do. 
+      return;
+    }
+    console.log('jumping up to nearest non-hidden cell...');
+    nbTrack.currentWidget.content.activeCellIndex = parentLoc;  
+  }
+  else{
+    // normal operation.
+    console.log('normal up.')
+    nbTrack.currentWidget.content.activeCellIndex -= 1;
+  }
+}
+
+function handleDown(nbTrack : INotebookTracker){
+  console.log('Handling Down Arrow!');
+  let newIndex = nbTrack.currentWidget.content.activeCellIndex + 1;
+  if (newIndex >= nbTrack.currentWidget.content.widgets.length){
+    return;
+  }
+  let newPotentialActiveCell = nbTrack.currentWidget.content.widgets[newIndex];
+  let isHidden = newPotentialActiveCell.isHidden;
+  if (isHidden){
+    let parentLoc = findNearestUncollapsedDownwards(newIndex, nbTrack);
+    if (parentLoc == -1) {
+      // no parent, can't be collapsed so nothing to do. 
+      return;
+    }
+    console.log('jumping down to nearest non-hidden cell...');
+    nbTrack.currentWidget.content.activeCellIndex = parentLoc;  
+  }
+  else{
+    // normal operation.
+    console.log('normal down.')
+    nbTrack.currentWidget.content.activeCellIndex += 1;
+  }
+}
+
+function findNearestUncollapsedUpwards(index : number, nbTrack : INotebookTracker) : number {
+  // Finds the nearest header above the given cell. If the cell is a header itself, it does not return itself; 
+  // this can be checked directly by calling functions. 
+  if (index >= nbTrack.currentWidget.content.widgets.length){
+    return -1;
+  }
+  while (index > 0){
+    index -= 1;
+    let cell = nbTrack.currentWidget.content.widgets[index];
+    if (!cell.isHidden){
+      return index;
+    }
+  }
+  return -1; // else no unhidden found above.
+}
+
+
+function findNearestUncollapsedDownwards(index : number, nbTrack : INotebookTracker) : number {
+  // Finds the nearest header above the given cell. If the cell is a header itself, it does not return itself; 
+  // this can be checked directly by calling functions. 
+  if (index >= nbTrack.currentWidget.content.widgets.length || index < 0){
+    return -1;
+  }
+  while (index < nbTrack.currentWidget.content.widgets.length-1){
+    index += 1;
+    let cell = nbTrack.currentWidget.content.widgets[index];
+    if (!cell.isHidden){
+      return index;
+    }
+  }
+  return -1; // else no unhidden found above.
+}
 
 function collapseAll(nbTrack : INotebookTracker){
   console.log('Collapsing all header cells!');
@@ -232,7 +348,6 @@ function updateNotebookCollapsedState(nbTrack: INotebookTracker){
       count += 1;  
     }
   }
-  console.log('(fin)');
 }
 
 function updateButtons(nbTrack: INotebookTracker){
@@ -306,12 +421,17 @@ function setCellCollapse(
     return which+1;
   }
   let selectedHeaderInfo = getHeaderInfo(cell);
-  
-  if (cell.isHidden || (cell.constructor.name !== "MarkdownCell" && cell.constructor.name !== "xe") || !selectedHeaderInfo.isHeader){
+  let isMarkdown = false;
+  for (let classInc=0; classInc < cell.node.classList.length; classInc++){
+    if (cell.node.classList[classInc] == 'jp-MarkdownCell'){
+      isMarkdown = true;
+    } 
+  }
+  if (cell.isHidden || !isMarkdown || !selectedHeaderInfo.isHeader){
     // otherwise collapsing and uncollapsing already hidden stuff can 
     // cause some funny looking bugs.
-    console.log(which, 'cell hidden or not markdown or not a header markdown cell.', 
-                cell.isHidden, cell.constructor.name, selectedHeaderInfo.isHeader);
+    console.log( which, 'cell hidden or not markdown or not a header markdown cell.', 
+                 cell.isHidden, isMarkdown, selectedHeaderInfo.isHeader );
     return which+1;
   }  
   setCollapsedMetadata(cell, collapsing);
@@ -446,7 +566,7 @@ function getCollapsedMetadata(cell: Cell) : boolean {
     collapsedData = metadata.get('Collapsed') === 'true' ? true : false;
   } else {
     // default is false, not collapsed. Since the function will report false,
-    // Go ahead and add the corresponding metadata.
+    // Go ahead and add the corresponding metadata to make it consistent. 
     metadata.set('Collapsed', 'false');
   }
   return collapsedData;
@@ -509,7 +629,6 @@ function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
       isMarkdown = true;
     } 
   }
-  console.log('IsMarkdown: ', isMarkdown, cell.node.classList);
   if (!isMarkdown){
     return {isHeader:false, headerLevel:7};
   }
