@@ -138,6 +138,7 @@ function activate (
     keys: ['ArrowUp'],
     selector: '.jp-Notebook:focus'
   });}, 1000)
+
   setTimeout(()=>{ app.commands.addKeyBinding({
     command: command11,
     args: {},
@@ -145,22 +146,7 @@ function activate (
     selector: '.jp-Notebook:focus'
   });}, 1000);
   
-  nbTrack.activeCellChanged.connect(() => {
-    // the code is configured to uncollapse cells when they are selected. This both deals with the case that the user 
-    // arrows into a collapsed area and when the user adds a new cell in a collapsed area. 
-    console.log('active cell changed.');
-    let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
-    if (parentLoc == -1) {
-      // no parent, can't be collapsed so nothing to do. 
-      return;
-    }
-    let cell = nbTrack.currentWidget.content.widgets[parentLoc];
-    if (getCollapsedMetadata(cell)){
-      console.log('parent needs uncollapsing...');
-      // then uncollapse. 
-      setCellCollapse(nbTrack, parentLoc, false );
-    }
-  });
+  nbTrack.activeCellChanged.connect(() => {uncollapseParent(nbTrack.currentWidget.content.activeCellIndex, nbTrack)});
   /*
   app.commands.addKeyBinding({
     command: command10,
@@ -175,6 +161,27 @@ function activate (
     selector: '.jp-Notebook:focus'
   });*/
 };
+
+function uncollapseParent(which : number, nbTrack : INotebookTracker){
+  let nearestParentLoc = findNearestParentHeader(which, nbTrack);
+  if (nearestParentLoc == -1) {
+    // no parent, can't be collapsed so nothing to do. 
+    return;
+  }
+  let cell = nbTrack.currentWidget.content.widgets[nearestParentLoc]
+  if (!getCollapsedMetadata(cell) && !cell.isHidden){
+    // no uncollapsing needed.
+    return;
+  }
+  if (cell.isHidden){
+    // recursively uncollapse this cell's parent then.
+    uncollapseParent(nearestParentLoc, nbTrack);
+  }
+  if (getCollapsedMetadata(cell)){
+    // then uncollapse. 
+    setCellCollapse(nbTrack, nearestParentLoc, false );
+  }
+}
 
 function handleUp(nbTrack : INotebookTracker){
   console.log('Handling Up Arrow!');
