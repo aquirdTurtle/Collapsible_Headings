@@ -15,7 +15,7 @@ import {
   Cell
 } from '@jupyterlab/cells';
 
-import { ISettingRegistry } from '@jupyterlab/coreutils';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   activate,
