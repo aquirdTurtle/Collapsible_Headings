@@ -15,7 +15,8 @@ import {
   Cell
 } from '@jupyterlab/cells';
 
-import { ISettingRegistry } from '@jupyterlab/coreutils';
+//import './style/index.css';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   activate,
@@ -23,6 +24,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
   id: '@aquirdturtle/collapsible_headings:plugin',
   autoStart: true
 };
+
+
 
 function activate (
   app: JupyterFrontEnd,
@@ -36,6 +39,7 @@ function activate (
 
   
   const command1: string = 'Collapsible_Headings:Toggle_Collapse';
+  
   app.commands.addCommand(command1, {
     label: 'Toggle Collapse',
     execute: () => { toggleCurrentCellCollapse(nbTrack); }
@@ -375,9 +379,9 @@ function updateButtons(nbTrack: INotebookTracker){
 function setButtonIcon(button: HTMLElement, collapsed: boolean, headerLevel: number) {
   console.log('Adding Button!');
   if (collapsed) {
-    button.style.background = "var(--jp-icon-caretright) no-repeat center";
+    button.style.background = "var(--jp-myicon-caretright) no-repeat center";
   } else {
-    button.style.background = "var(--jp-icon-caretdown) no-repeat center";
+    button.style.background = "var(--jp-myicon-caretdown) no-repeat center";
   }
   // center the icons better.
   button.style.position = "relative";
@@ -576,7 +580,6 @@ function uncollapseCell(nbTrack: INotebookTracker) {
     }
   }
 }
-
 
 function getCollapsedMetadata(cell: Cell) : boolean {
   let metadata = cell.model.metadata;
