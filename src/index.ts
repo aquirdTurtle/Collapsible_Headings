@@ -594,19 +594,30 @@ function uncollapseCell(nbTrack: INotebookTracker) {
 function getCollapsedMetadata(cell: Cell) : boolean {
   let metadata = cell.model.metadata;
   let collapsedData = false;
-  if (metadata.has('Collapsed')){
-    collapsedData = metadata.get('Collapsed') === 'true' ? true : false;
+  // handle old metadata.
+  if (metadata.has("Collapsed"))
+  {
+    metadata.set("collapsed", metadata.get('Collapsed'))
+    metadata.delete("Collapsed");
+  }
+  if (metadata.has('collapsed')){
+    collapsedData = metadata.get('collapsed') === 'true' ? true : false;
   } else {
-    // default is false, not collapsed. Since the function will report false,
-    // Go ahead and add the corresponding metadata to make it consistent. 
-    metadata.set('Collapsed', 'false');
+    // default is false, not collapsed.
   }
   return collapsedData;
 }
 
 function setCollapsedMetadata(cell: Cell, data: boolean) {
   let metadata = cell.model.metadata;
-  metadata.set('Collapsed', data ? 'true' : 'false');
+  if (data)
+  {
+    metadata.set('collapsed', 'true');  
+  }
+  else
+  {
+    metadata.delete("collapsed");
+  }
 }
 
 function addHeaderBelow(nbTrack : INotebookTracker){
