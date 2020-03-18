@@ -25,7 +25,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
   autoStart: true
 };
 
-
+const debugLogOpt = false;
+function debugLog(message?: any, ...optionalParams: any[])
+{
+  if (debugLogOpt)
+  {
+    console.log(message,optionalParams);
+  }
+}
 
 function activate (
   app: JupyterFrontEnd,
@@ -34,10 +41,9 @@ function activate (
   settings: ISettingRegistry
 ){
   settings.load(plugin.id)
-  .then(resSettings => console.log('LOAD SETTINGS: ', resSettings));
-  console.log('Collapsible_Headings Extension Active!');
+  .then(resSettings => debugLog('LOAD SETTINGS: ', resSettings));
+  debugLog('Collapsible_Headings Extension Active!');
 
-  
   const command1: string = 'Collapsible_Headings:Toggle_Collapse';
   
   app.commands.addCommand(command1, {
@@ -119,7 +125,7 @@ function activate (
 
   nbTrack.currentChanged.connect(()=>{
     nbTrack.currentWidget.content.model.stateChanged.connect(()=>{
-      //console.log('notebook model state change detected.', nbTrack.currentWidget.content.widgets.length);
+      //debugLog('notebook model state change detected.', nbTrack.currentWidget.content.widgets.length);
       if (nbTrack.currentWidget.content.widgets.length > 1){
         // this is a signal that I found that gets called after the cell list has been populated, so possible
         // to initialize these things now.
@@ -131,7 +137,7 @@ function activate (
     });
   });
   NotebookActions.executed.connect(() => {
-    console.log('Cell executed. Updating buttons.');
+    debugLog('Cell executed. Updating buttons.');
     updateButtons(nbTrack);
   })
   // for some reason if I don't do this with a timeout, setting these bindings seems to fail *sometimes* 
@@ -188,7 +194,7 @@ function uncollapseParent(which : number, nbTrack : INotebookTracker){
 }
 
 function handleUp(nbTrack : INotebookTracker){
-  console.log('Handling Up Arrow!');
+  debugLog('Handling Up Arrow!');
   if (nbTrack.currentWidget.content.activeCellIndex == 0){
     return;
   }
@@ -201,18 +207,18 @@ function handleUp(nbTrack : INotebookTracker){
       // no parent, can't be collapsed so nothing to do. 
       return;
     }
-    console.log('jumping up to nearest non-hidden cell...');
+    debugLog('jumping up to nearest non-hidden cell...');
     nbTrack.currentWidget.content.activeCellIndex = parentLoc;  
   }
   else{
     // normal operation.
-    console.log('normal up.')
+    debugLog('normal up.')
     nbTrack.currentWidget.content.activeCellIndex -= 1;
   }
 }
 
 function handleDown(nbTrack : INotebookTracker){
-  console.log('Handling Down Arrow!');
+  debugLog('Handling Down Arrow!');
   let newIndex = nbTrack.currentWidget.content.activeCellIndex + 1;
   if (newIndex >= nbTrack.currentWidget.content.widgets.length){
     return;
@@ -225,12 +231,12 @@ function handleDown(nbTrack : INotebookTracker){
       // no parent, can't be collapsed so nothing to do. 
       return;
     }
-    console.log('jumping down to nearest non-hidden cell...');
+    debugLog('jumping down to nearest non-hidden cell...');
     nbTrack.currentWidget.content.activeCellIndex = parentLoc;  
   }
   else{
     // normal operation.
-    console.log('normal down.')
+    debugLog('normal down.')
     nbTrack.currentWidget.content.activeCellIndex += 1;
   }
 }
@@ -269,7 +275,7 @@ function findNearestUncollapsedDownwards(index : number, nbTrack : INotebookTrac
 }
 
 function collapseAll(nbTrack : INotebookTracker){
-  console.log('Collapsing all header cells!');
+  debugLog('Collapsing all header cells!');
   if (nbTrack.currentWidget){
     for (let cellI = 0; cellI < nbTrack.currentWidget.content.widgets.length; cellI++){
       let cell = nbTrack.currentWidget.content.widgets[cellI];
@@ -289,7 +295,7 @@ function collapseAll(nbTrack : INotebookTracker){
 }
 
 function uncollapseAll(nbTrack : INotebookTracker){
-  console.log('Un-Collapsing all header cells!');
+  debugLog('Un-Collapsing all header cells!');
   if (nbTrack.currentWidget){
     for (let cellI = 0; cellI < nbTrack.currentWidget.content.widgets.length; cellI++){
       let cell = nbTrack.currentWidget.content.widgets[cellI];
@@ -312,10 +318,10 @@ function findNextParentHeader(index : number, nbTrack : INotebookTracker){
     return -1;
   }
   let childHeaderInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[index]);
-  console.log('child', childHeaderInfo)
+  debugLog('child'+ childHeaderInfo)
   for (let cellN = index+1; cellN < nbTrack.currentWidget.content.widgets.length; cellN++ ){
     let hInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[cellN]);
-    console.log(hInfo)
+    debugLog(hInfo)
     if (hInfo.isHeader && hInfo.headerLevel <= childHeaderInfo.headerLevel ){
       return cellN;
     }
@@ -346,7 +352,7 @@ function findNearestParentHeader(index : number, nbTrack : INotebookTracker) : n
 
 
 function updateNotebookCollapsedState(nbTrack: INotebookTracker){
-  console.log('Updating Notebook Collapse State...!');
+  debugLog('Updating Notebook Collapse State...!');
   let nextCellIndex = 0;
   let count = 0;
   if (nbTrack.currentWidget){
@@ -362,7 +368,7 @@ function updateNotebookCollapsedState(nbTrack: INotebookTracker){
 }
 
 function updateButtons(nbTrack: INotebookTracker){
-  console.log('Updating Collapsible Heading Buttons');
+  debugLog('Updating Collapsible Heading Buttons');
   let allWidgets = nbTrack.currentWidget.content.widgets;
   for (let widgetNum = 0; widgetNum < allWidgets.length; widgetNum++) {
     let subCell = allWidgets[widgetNum];
@@ -377,7 +383,7 @@ function updateButtons(nbTrack: INotebookTracker){
 }
 
 function setButtonIcon(button: HTMLElement, collapsed: boolean, headerLevel: number) {
-  console.log('Adding Button!');
+  debugLog('Adding Button!');
   if (collapsed) {
     button.style.background = "var(--jp-myicon-caretright) no-repeat center";
   } else {
@@ -410,7 +416,7 @@ function addButton(cell: Cell, nbTrack: INotebookTracker) {
 
 function removeButton(cell: Cell) {
   if (cell.promptNode.getElementsByClassName("toc-button").length != 0){
-    console.log('Removing Button.')
+    debugLog('Removing Button.')
     cell.promptNode.removeChild(cell.promptNode.getElementsByClassName("toc-button")[0]);
   }
 }
@@ -424,15 +430,19 @@ function setCellCollapse(
     return which+1;
   }
   if (which >= nbTrack.currentWidget.content.widgets.length){
-    console.log(which, 'tried to collapse non-existing cell!');
+    debugLog(which, 'tried to collapse non-existing cell!');
   }
   let cell = nbTrack.currentWidget.content.widgets[which];
   if (!cell) {
-    console.log(which, 'cell invalid?!');
+    debugLog(which, 'cell invalid?!');
     return which+1;
   }
   let selectedHeaderInfo = getHeaderInfo(cell);
   let isMarkdown = false;
+  if (cell == undefined)
+  {
+    return;
+  }
   for (let classInc=0; classInc < cell.node.classList.length; classInc++){
     if (cell.node.classList[classInc] == 'jp-MarkdownCell'){
       isMarkdown = true;
@@ -441,7 +451,7 @@ function setCellCollapse(
   if (cell.isHidden || !isMarkdown || !selectedHeaderInfo.isHeader){
     // otherwise collapsing and uncollapsing already hidden stuff can 
     // cause some funny looking bugs.
-    console.log( which, 'cell hidden or not markdown or not a header markdown cell.', 
+    debugLog( which, 'cell hidden or not markdown or not a header markdown cell.', 
                  cell.isHidden, isMarkdown, selectedHeaderInfo.isHeader );
     return which+1;
   }  
@@ -449,7 +459,7 @@ function setCellCollapse(
   let button = getOrCreateCollapseButton(cell, nbTrack);
   let headerLevel = getHeaderInfo(cell).headerLevel;
   setButtonIcon(button as HTMLElement, collapsing, headerLevel);
-  console.log(which, collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
+  debugLog(which, collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
   let localCollapsed = false;
   let localCollapsedLevel = 0;
   // iterate through all cells after the active cell.
@@ -467,7 +477,7 @@ function setCellCollapse(
     ){
       // then reached an equivalent or higher header level than the
       // original the end of the collapse.
-      console.log(cellNum, 'Reached end of Collapse Section. Break.')
+      debugLog(cellNum, 'Reached end of Collapse Section. Break.')
       cellNum -= 1;
       break;
     }
@@ -477,24 +487,24 @@ function setCellCollapse(
       && subCellHeaderInfo.headerLevel <= localCollapsedLevel
     ) {
       // then reached the end of the local collapsed, so unset this.
-      console.log(cellNum, 'Reached End of local collapse.')
+      debugLog(cellNum, 'Reached End of local collapse.')
       localCollapsed = false;
     }
     if (collapsing || localCollapsed) {
       // then no extra handling is needed for further locally collapsed
       // headers.
-      console.log(cellNum, 'Collapsing Normally.');
+      debugLog(cellNum, 'Collapsing Normally.');
       subCell.setHidden(true);
       continue;
     }
     if (getCollapsedMetadata(subCell) && subCellHeaderInfo.isHeader) {
-      console.log(cellNum, 'Found locally collapsed section.');
+      debugLog(cellNum, 'Found locally collapsed section.');
       localCollapsed = true;
       localCollapsedLevel = subCellHeaderInfo.headerLevel;
       // but don't collapse the locally collapsed header, so continue to
       // uncollapse the header. This will get noticed in the next round.
     }
-    console.log(cellNum, 'Uncollapsing Normally.');
+    debugLog(cellNum, 'Uncollapsing Normally.');
     subCell.setHidden(false);
   }
   return cellNum + 1;
@@ -502,7 +512,7 @@ function setCellCollapse(
 
 
 function toggleCurrentCellCollapse(nbTrack: INotebookTracker) {
-  console.log(nbTrack.activeCell)
+  debugLog(nbTrack.activeCell)
   if (!nbTrack.activeCell) {
     return;
   }
@@ -610,7 +620,7 @@ function addHeaderBelow(nbTrack : INotebookTracker){
   }
   let res = findNextParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack)
   if (headerInfo.isHeader == false) {
-    console.log('Finding nearest parent header failed!');
+    debugLog('Finding nearest parent header failed!');
   }
   nbTrack.currentWidget.content.activeCellIndex = res;
   NotebookActions.insertAbove(nbTrack.currentWidget.content);
@@ -618,7 +628,7 @@ function addHeaderBelow(nbTrack : INotebookTracker){
   NotebookActions.changeCellType(nbTrack.currentWidget.content, "markdown");
   nbTrack.activeCell.editor.setSelection({start: {line: 0, column: headerInfo.headerLevel+1}, end: {line: 0, column: 10}})
   nbTrack.activeCell.editor.focus()
-  console.log('Added Header Cell Below Current Selection.');
+  debugLog('Added Header Cell Below Current Selection.');
 }
 
 function addHeaderAbove(nbTrack : INotebookTracker)  {
@@ -632,20 +642,24 @@ function addHeaderAbove(nbTrack : INotebookTracker)  {
     headerInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[res]);
   }
   if (headerInfo.isHeader == false) {
-    console.log('Finding nearest parent header failed!');
+    debugLog('Finding nearest parent header failed!');
   }
   NotebookActions.insertAbove(nbTrack.currentWidget.content);
   NotebookActions.setMarkdownHeader(nbTrack.currentWidget.content, headerInfo.headerLevel);
   NotebookActions.changeCellType(nbTrack.currentWidget.content, "markdown");
-  console.log(nbTrack.activeCell)
+  debugLog(nbTrack.activeCell)
   nbTrack.activeCell.editor.setSelection({start: {line: 0, column: headerInfo.headerLevel+1}, end: {line: 0, column: 10}})
   nbTrack.activeCell.editor.focus()
-  console.log('Added Header Cell Above Current Selection.');
+  debugLog('Added Header Cell Above Current Selection.');
 }
 
 
 function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
   let isMarkdown = false;
+  if (cell == undefined)
+  {
+    return;
+  }
   for (let classInc=0; classInc < cell.node.classList.length; classInc++){
     if (cell.node.classList[classInc] == 'jp-MarkdownCell'){
       isMarkdown = true;
@@ -664,7 +678,7 @@ function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
   let match2 = line2 && line2.match(/^([=]{2,}|[-]{2,})/);
   //let match3 = line.match(/<h([1-6])>(.*)<\/h\1>/i);
   let match3 = line.match(/<h([1-6])(.*)>(.*)<\/h\1>/i);
-  //console.log(line, match, match2, match3)
+  //debugLog(line, match, match2, match3)
   let isHeader = ((match !== null) || (match2 !== undefined && match2 !== null && Boolean(match2) !== false) 
                 || (match3 !== null));
   // There are only 6 levels of markdown headers so this gives one past that. 
