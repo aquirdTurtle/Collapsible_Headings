@@ -15,7 +15,8 @@ import {
   Cell
 } from '@jupyterlab/cells';
 
-//import './style/index.css';
+import { ElementExt } from '@phosphor/domutils';
+
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -25,10 +26,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
   autoStart: true
 };
 
-const debugLogOpt = false;
 function debugLog(message?: any, ...optionalParams: any[])
 {
-  if (debugLogOpt)
+  // a simple wrapper which makes it very easy to turn logging off. 
+  if (false)
   {
     console.log(message,optionalParams);
   }
@@ -89,13 +90,13 @@ function activate (
   
   const command8: string = 'Collapsible_Headings:Uncollapse_Header';
   app.commands.addCommand(command8, {
-    label: 'Add Header Below',
+    label: 'Un-Collapse Header',
     execute: () => { uncollapseCell(nbTrack); }
   });
   
   const command9: string = 'Collapsible_Headings:Collapse_Header';
   app.commands.addCommand(command9, {
-    label: 'Add Header Below',
+    label: 'Collapse Header',
     execute: () => { collapseCell(nbTrack); }
   });
 
@@ -215,6 +216,7 @@ function handleUp(nbTrack : INotebookTracker){
     debugLog('normal up.')
     nbTrack.currentWidget.content.activeCellIndex -= 1;
   }
+  ElementExt.scrollIntoViewIfNeeded(nbTrack.currentWidget.content.node, nbTrack.activeCell.node)
 }
 
 function handleDown(nbTrack : INotebookTracker){
@@ -232,13 +234,14 @@ function handleDown(nbTrack : INotebookTracker){
       return;
     }
     debugLog('jumping down to nearest non-hidden cell...');
-    nbTrack.currentWidget.content.activeCellIndex = parentLoc;  
+    nbTrack.currentWidget.content.activeCellIndex = parentLoc;
   }
   else{
     // normal operation.
     debugLog('normal down.')
     nbTrack.currentWidget.content.activeCellIndex += 1;
   }
+  ElementExt.scrollIntoViewIfNeeded(nbTrack.currentWidget.content.node, nbTrack.activeCell.node)
 }
 
 function findNearestUncollapsedUpwards(index : number, nbTrack : INotebookTracker) : number {
@@ -452,7 +455,7 @@ function setCellCollapse(
     // otherwise collapsing and uncollapsing already hidden stuff can 
     // cause some funny looking bugs.
     debugLog( which, 'cell hidden or not markdown or not a header markdown cell.', 
-                 cell.isHidden, isMarkdown, selectedHeaderInfo.isHeader );
+              cell.isHidden, isMarkdown, selectedHeaderInfo.isHeader );
     return which+1;
   }  
   setCollapsedMetadata(cell, collapsing);
@@ -532,6 +535,7 @@ function toggleCurrentCellCollapse(nbTrack: INotebookTracker) {
     // otherwise the active cell will still be the now (usually) hidden cell
     nbTrack.currentWidget.content.activeCellIndex = parentLoc;
   }
+  ElementExt.scrollIntoViewIfNeeded(nbTrack.currentWidget.content.node, nbTrack.activeCell.node)
 }
 
 function collapseCell(nbTrack: INotebookTracker) {
@@ -564,6 +568,7 @@ function collapseCell(nbTrack: INotebookTracker) {
     // otherwise the active cell will still be the now (usually) hidden cell
     nbTrack.currentWidget.content.activeCellIndex = parentLoc;
   }
+  ElementExt.scrollIntoViewIfNeeded(nbTrack.currentWidget.content.node, nbTrack.activeCell.node)
 }
 
 
@@ -589,6 +594,7 @@ function uncollapseCell(nbTrack: INotebookTracker) {
       nbTrack.currentWidget.content.activeCellIndex = parentLoc;  
     }
   }
+  ElementExt.scrollIntoViewIfNeeded(nbTrack.currentWidget.content.node, nbTrack.activeCell.node)
 }
 
 function getCollapsedMetadata(cell: Cell) : boolean {
