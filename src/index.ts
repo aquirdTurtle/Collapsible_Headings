@@ -603,11 +603,11 @@ function getCollapsedMetadata(cell: Cell) : boolean {
   // handle old metadata.
   if (metadata.has("Collapsed"))
   {
-    metadata.set("collapsed", metadata.get('Collapsed'))
+    metadata.set("heading_collapsed", metadata.get('Collapsed'))
     metadata.delete("Collapsed");
   }
-  if (metadata.has('collapsed')){
-    collapsedData = metadata.get('collapsed') === 'true' ? true : false;
+  if (metadata.has('heading_collapsed')){
+    collapsedData = metadata.get('heading_collapsed') === 'true' ? true : false;
   } else {
     // default is false, not collapsed.
   }
@@ -618,11 +618,11 @@ function setCollapsedMetadata(cell: Cell, data: boolean) {
   let metadata = cell.model.metadata;
   if (data)
   {
-    metadata.set('collapsed', 'true');  
+    metadata.set('heading_collapsed', 'true');  
   }
   else
   {
-    metadata.delete("collapsed");
+    metadata.delete("heading_collapsed");
   }
 }
 
