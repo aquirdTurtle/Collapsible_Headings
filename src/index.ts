@@ -40,7 +40,7 @@ function activate (
   settings: ISettingRegistry
 ){
   settings.load(plugin.id).then(resSettings => debugLog('LOAD SETTINGS: ', resSettings));
-  debugLog('Collapsible_Headings Extension Active!');
+  debugLog('Collapsible_Headings Extension Active! TEST');
 
   const toggleCollapseCmd:        string = 'Collapsible_Headings:Toggle_Collapse';  
   const manuallyUpdateCmd:        string = 'Collapsible_Headings:Manually_Update_Collapse_Buttons';
@@ -96,10 +96,18 @@ function activate (
   })
   // for some reason if I don't do this with a timeout, setting these bindings seems to fail *sometimes* 
   // and the arrows invoke these commands
+
+  // I don't remember why these are necessary when I have the shortcut...
   setTimeout(()=>{ app.commands.addKeyBinding({
     command: handleUpCmd,
     args: {},
     keys: ['ArrowUp'],
+    selector: '.jp-Notebook:focus'
+  });}, 1000)
+  setTimeout(()=>{ app.commands.addKeyBinding({
+    command: handleUpCmd,
+    args: {},
+    keys: ['K'],
     selector: '.jp-Notebook:focus'
   });}, 1000)
 
@@ -107,6 +115,12 @@ function activate (
     command: handleDownCmd,
     args: {},
     keys: ['ArrowDown'],
+    selector: '.jp-Notebook:focus'
+  });}, 1000);
+  setTimeout(()=>{ app.commands.addKeyBinding({
+    command: handleDownCmd,
+    args: {},
+    keys: ['J'],
     selector: '.jp-Notebook:focus'
   });}, 1000);
   nbTrack.activeCellChanged.connect(() => {uncollapseParent(nbTrack.currentWidget.content.activeCellIndex, nbTrack)});
