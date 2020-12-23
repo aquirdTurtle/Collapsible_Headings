@@ -26,11 +26,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
   autoStart: true
 };
 
-function debugLog(message?: any, ...optionalParams: any[])
-{
+function debugLog(message?: any, ...optionalParams: any[]){
   // a simple wrapper which makes it very easy to turn logging off. 
-  if (false)
-  {
+  if (true) {
     console.log(message,optionalParams);
   }
 }
@@ -41,92 +39,47 @@ function activate (
   palette: ICommandPalette,
   settings: ISettingRegistry
 ){
-  settings.load(plugin.id)
-  .then(resSettings => debugLog('LOAD SETTINGS: ', resSettings));
+  settings.load(plugin.id).then(resSettings => debugLog('LOAD SETTINGS: ', resSettings));
   debugLog('Collapsible_Headings Extension Active!');
 
-  const command1: string = 'Collapsible_Headings:Toggle_Collapse';
-  
-  app.commands.addCommand(command1, {
-    label: 'Toggle Collapse',
-    execute: () => { toggleCurrentCellCollapse(nbTrack); }
-  });
-  
-  const command2: string = 'Collapsible_Headings:Manually_Update_Collapse_Buttons';
-  app.commands.addCommand(command2, {
-    label: 'Refresh Collapse Buttons',
-    execute: () => { updateButtons(nbTrack); }
-  });
-  
-  const command3: string = 'Collapsible_Headings:Manually_Update_Notebook_Collapse_State';
-  app.commands.addCommand(command3, {
-    label: 'Refresh Notebook Collapse State',
-    execute: () => { updateNotebookCollapsedState(nbTrack); }
-  });
+  const toggleCollapseCmd:        string = 'Collapsible_Headings:Toggle_Collapse';  
+  const manuallyUpdateCmd:        string = 'Collapsible_Headings:Manually_Update_Collapse_Buttons';
+  const manuallyUpdateStateCmd:   string = 'Collapsible_Headings:Manually_Update_Notebook_Collapse_State';
+  const collapseAllCmd:           string = 'Collapsible_Headings:Collapse_All';
+  const uncollapseAllCmd:         string = 'Collapsible_Headings:UnCollapse_All';
+  const addHeaderAboveCmd:        string = 'Collapsible_Headings:Add_Header_Above'; 
+  const addHeaderBelowCmd:        string = 'Collapsible_Headings:Add_Header_Below'; 
+  const uncollapseHeaderCmd:      string = 'Collapsible_Headings:Uncollapse_Header';
+  const collapseCmd:              string = 'Collapsible_Headings:Collapse_Header';
+  const handleUpCmd:              string = 'Collapsible_Headings:HandleUp';
+  const handleDownCmd:            string = 'Collapsible_Headings:HandleDown';
 
-  const command4: string = 'Collapsible_Headings:Collapse_All';
-  app.commands.addCommand(command4, {
-    label: 'Collapse All Cells',
-    execute: () => { collapseAll(nbTrack); }
-  });
-  
-  const command5: string = 'Collapsible_Headings:UnCollapse_All';
-  app.commands.addCommand(command5, {
-    label: 'Un-Collapse All Cells',
-    execute: () => { uncollapseAll(nbTrack); }
-  });
-  
-  const command6: string = 'Collapsible_Headings:Add_Header_Above';
-  app.commands.addCommand(command6, {
-    label: 'Add Header Above',
-    execute: () => { addHeaderAbove(nbTrack); }
-  });
-  
-  const command7: string = 'Collapsible_Headings:Add_Header_Below';
-  app.commands.addCommand(command7, {
-    label: 'Add Header Below',
-    execute: () => { addHeaderBelow(nbTrack); }
-  });
-  
-  const command8: string = 'Collapsible_Headings:Uncollapse_Header';
-  app.commands.addCommand(command8, {
-    label: 'Un-Collapse Header',
-    execute: () => { uncollapseCell(nbTrack); }
-  });
-  
-  const command9: string = 'Collapsible_Headings:Collapse_Header';
-  app.commands.addCommand(command9, {
-    label: 'Collapse Header',
-    execute: () => { collapseCell(nbTrack); }
-  });
+  app.commands.addCommand(toggleCollapseCmd,      { label: 'Toggle Collapse', execute: () => { toggleCurrentCellCollapse(nbTrack); }});
+  app.commands.addCommand(manuallyUpdateCmd,      { label: 'Refresh Collapse Buttons', execute: () => { updateButtons(nbTrack); } });
+  app.commands.addCommand(manuallyUpdateStateCmd, { label: 'Refresh Notebook Collapse State', execute: () => { updateNotebookCollapsedState(nbTrack); }});
+  app.commands.addCommand(collapseAllCmd,         { label: 'Collapse All Cells', execute: () => { collapseAll(nbTrack); }});
+  app.commands.addCommand(uncollapseAllCmd,       { label: 'Un-Collapse All Cells', execute: () => { uncollapseAll(nbTrack); }});
+  app.commands.addCommand(addHeaderAboveCmd,      { label: 'Add Header Above', execute: () => { addHeaderAbove(nbTrack); } });
+  app.commands.addCommand(addHeaderBelowCmd,      { label: 'Add Header Below', execute: () => { addHeaderBelow(nbTrack); } });
+  app.commands.addCommand(uncollapseHeaderCmd,    { label: 'Un-Collapse Header', execute: () => { uncollapseCell(nbTrack); } });
+  app.commands.addCommand(collapseCmd,            { label: 'Collapse Header', execute: () => { collapseCell(nbTrack); }});
+  app.commands.addCommand(handleUpCmd,            { label: 'Handle Up Arrow', execute: () => { handleUp(nbTrack); }});
+  app.commands.addCommand(handleDownCmd,          { label: 'Handle Down Arrow',  execute: () => { handleDown(nbTrack); } });
 
-  const command10: string = 'Collapsible_Headings:HandleUp';
-  app.commands.addCommand(command10, {
-    label: 'Handle Up Arrow',
-    execute: () => { handleUp(nbTrack); }
-  });
-
-  const command11: string = 'Collapsible_Headings:HandleDown';
-  app.commands.addCommand(command11, {  
-    label: 'Handle Down Arrow',
-    execute: () => { handleDown(nbTrack); }
-  });
-
-  palette.addItem({command:command1,  category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command2,  category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command3,  category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command4,  category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command5,  category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command6,  category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command7,  category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command8,  category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command9,  category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command10, category: 'Collapsible Headings Extension'});
-  palette.addItem({command:command11, category: 'Collapsible Headings Extension'});
+  palette.addItem({command:toggleCollapseCmd,       category: 'Collapsible Headings Extension'});
+  palette.addItem({command:manuallyUpdateCmd,       category: 'Collapsible Headings Extension'});
+  palette.addItem({command:manuallyUpdateStateCmd,  category: 'Collapsible Headings Extension'});
+  palette.addItem({command:collapseAllCmd,          category: 'Collapsible Headings Extension'});
+  palette.addItem({command:uncollapseAllCmd,        category: 'Collapsible Headings Extension'});
+  palette.addItem({command:addHeaderAboveCmd,       category: 'Collapsible Headings Extension'});
+  palette.addItem({command:addHeaderBelowCmd,       category: 'Collapsible Headings Extension'});
+  palette.addItem({command:uncollapseHeaderCmd,     category: 'Collapsible Headings Extension'});
+  palette.addItem({command:collapseCmd,             category: 'Collapsible Headings Extension'});
+  palette.addItem({command:handleUpCmd,             category: 'Collapsible Headings Extension'});
+  palette.addItem({command:handleDownCmd,           category: 'Collapsible Headings Extension'});
 
   nbTrack.currentChanged.connect(()=>{
     nbTrack.currentWidget.content.model.stateChanged.connect(()=>{
-      //debugLog('notebook model state change detected.', nbTrack.currentWidget.content.widgets.length);
       if (nbTrack.currentWidget.content.widgets.length > 1){
         // this is a signal that I found that gets called after the cell list has been populated, so possible
         // to initialize these things now.
@@ -144,33 +97,19 @@ function activate (
   // for some reason if I don't do this with a timeout, setting these bindings seems to fail *sometimes* 
   // and the arrows invoke these commands
   setTimeout(()=>{ app.commands.addKeyBinding({
-    command: command10,
+    command: handleUpCmd,
     args: {},
     keys: ['ArrowUp'],
     selector: '.jp-Notebook:focus'
   });}, 1000)
 
   setTimeout(()=>{ app.commands.addKeyBinding({
-    command: command11,
+    command: handleDownCmd,
     args: {},
     keys: ['ArrowDown'],
     selector: '.jp-Notebook:focus'
   });}, 1000);
-  
   nbTrack.activeCellChanged.connect(() => {uncollapseParent(nbTrack.currentWidget.content.activeCellIndex, nbTrack)});
-  /*
-  app.commands.addKeyBinding({
-    command: command10,
-    args: {},
-    keys: ['ArrowUp'],
-    selector: '.jp-Notebook:focus'
-  });
-  app.commands.addKeyBinding({
-    command: command11,
-    args: {},
-    keys: ['ArrowDown'],
-    selector: '.jp-Notebook:focus'
-  });*/
 };
 
 function uncollapseParent(which : number, nbTrack : INotebookTracker){
@@ -260,7 +199,6 @@ function findNearestUncollapsedUpwards(index : number, nbTrack : INotebookTracke
   return -1; // else no unhidden found above.
 }
 
-
 function findNearestUncollapsedDownwards(index : number, nbTrack : INotebookTracker) : number {
   // Finds the nearest header above the given cell. If the cell is a header itself, it does not return itself; 
   // this can be checked directly by calling functions. 
@@ -315,7 +253,6 @@ function uncollapseAll(nbTrack : INotebookTracker){
   updateNotebookCollapsedState(nbTrack);
 }
 
-
 function findNextParentHeader(index : number, nbTrack : INotebookTracker){
   if (index >= nbTrack.currentWidget.content.widgets.length){
     return -1;
@@ -332,7 +269,6 @@ function findNextParentHeader(index : number, nbTrack : INotebookTracker){
   // else no parent header found. return the index of the last cell
   return nbTrack.currentWidget.content.widgets.length-1;
 }
-
 
 function findNearestParentHeader(index : number, nbTrack : INotebookTracker) : number {
   // Finds the nearest header above the given cell. If the cell is a header itself, it does not return itself; 
@@ -352,7 +288,6 @@ function findNearestParentHeader(index : number, nbTrack : INotebookTracker) : n
   // else no parent header found.
   return -1;
 }
-
 
 function updateNotebookCollapsedState(nbTrack: INotebookTracker){
   debugLog('Updating Notebook Collapse State...!');
@@ -513,7 +448,6 @@ function setCellCollapse(
   return cellNum + 1;
 }
 
-
 function toggleCurrentCellCollapse(nbTrack: INotebookTracker) {
   debugLog(nbTrack.activeCell)
   if (!nbTrack.activeCell) {
@@ -570,7 +504,6 @@ function collapseCell(nbTrack: INotebookTracker) {
   }
   ElementExt.scrollIntoViewIfNeeded(nbTrack.currentWidget.content.node, nbTrack.activeCell.node)
 }
-
 
 function uncollapseCell(nbTrack: INotebookTracker) {
   if (!nbTrack.activeCell) {
@@ -669,7 +602,6 @@ function addHeaderAbove(nbTrack : INotebookTracker)  {
   nbTrack.activeCell.editor.focus()
   debugLog('Added Header Cell Above Current Selection.');
 }
-
 
 function getHeaderInfo(cell: Cell) : {isHeader: boolean, headerLevel: number} {
   let isMarkdown = false;
