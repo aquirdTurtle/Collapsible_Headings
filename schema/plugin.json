@@ -34,7 +34,6 @@
       "keys": ["ArrowLeft"],
       "selector": ".jp-Notebook:focus"
     }
-
   ],
   "properties": {
   },

@@ -97,7 +97,7 @@ function activate (
   // for some reason if I don't do this with a timeout, setting these bindings seems to fail *sometimes* 
   // and the arrows invoke these commands
 
-  // I don't remember why these are necessary when I have the shortcut...
+  // I believe these bindings being here just makes them non-optional. 
   setTimeout(()=>{ app.commands.addKeyBinding({
     command: handleUpCmd,
     args: {},
@@ -512,7 +512,7 @@ function collapseCell(nbTrack: INotebookTracker) {
       // no parent, can't be collapsed so nothing to do. 
       return;
     }
-    setCellCollapse(nbTrack, parentLoc, true );
+    // setCellCollapse(nbTrack, parentLoc, true );
     // otherwise the active cell will still be the now (usually) hidden cell
     nbTrack.currentWidget.content.activeCellIndex = parentLoc;
   }
@@ -536,7 +536,7 @@ function uncollapseCell(nbTrack: INotebookTracker) {
     // not sure this should ever be reached... suggests user had selection on collapsed cell.
     let collapsed = getCollapsedMetadata(nbTrack.currentWidget.content.widgets[parentLoc]);
     if (collapsed){
-      setCellCollapse(nbTrack, parentLoc, false );
+      //setCellCollapse(nbTrack, parentLoc, false );
       // otherwise the active cell will still be the now (usually) hidden cell
       nbTrack.currentWidget.content.activeCellIndex = parentLoc;  
     }
