@@ -288,7 +288,7 @@ function findNearestParentHeader(index : number, nbTrack : INotebookTracker) : n
   // Finds the nearest header above the given cell. If the cell is a header itself, it does not return itself; 
   // this can be checked directly by calling functions. 
   if (index >= nbTrack.currentWidget.content.widgets.length){
-    return -1;
+    return -1; // strange...
   }
   let childHeaderInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[index]);
   for (let cellN = index-1; cellN >= 0; cellN-- ){
@@ -506,14 +506,12 @@ function collapseCell(nbTrack: INotebookTracker) {
       setCellCollapse(nbTrack, nbTrack.currentWidget.content.activeCellIndex, true );
     }
   } else {
-    // then Collapse parent!
+    // then jump to previous parent.
     let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
     if (parentLoc == -1) {
       // no parent, can't be collapsed so nothing to do. 
       return;
     }
-    // setCellCollapse(nbTrack, parentLoc, true );
-    // otherwise the active cell will still be the now (usually) hidden cell
     nbTrack.currentWidget.content.activeCellIndex = parentLoc;
   }
   ElementExt.scrollIntoViewIfNeeded(nbTrack.currentWidget.content.node, nbTrack.activeCell.node)
@@ -527,19 +525,12 @@ function uncollapseCell(nbTrack: INotebookTracker) {
     // Then uncollapse!
     setCellCollapse(nbTrack, nbTrack.currentWidget.content.activeCellIndex, false );
   } else {
-    // then uncollapse parent!
-    let parentLoc = findNearestParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
+    // then jump to next parent
+    let parentLoc = findNextParentHeader(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
     if (parentLoc == -1) {
-      // no parent, can't be collapsed so nothing to do. 
       return;
     }
-    // not sure this should ever be reached... suggests user had selection on collapsed cell.
-    let collapsed = getCollapsedMetadata(nbTrack.currentWidget.content.widgets[parentLoc]);
-    if (collapsed){
-      //setCellCollapse(nbTrack, parentLoc, false );
-      // otherwise the active cell will still be the now (usually) hidden cell
-      nbTrack.currentWidget.content.activeCellIndex = parentLoc;  
-    }
+    nbTrack.currentWidget.content.activeCellIndex = parentLoc; 
   }
   ElementExt.scrollIntoViewIfNeeded(nbTrack.currentWidget.content.node, nbTrack.activeCell.node)
 }
