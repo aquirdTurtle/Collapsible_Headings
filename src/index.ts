@@ -28,7 +28,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
 function debugLog(message?: any, ...optionalParams: any[]){
   // a simple wrapper which makes it very easy to turn logging off. 
-  if (true) {
+  if (false) {
     console.log(message,optionalParams);
   }
 }
@@ -77,7 +77,7 @@ function activate (
   palette.addItem({command:collapseCmd,             category: 'Collapsible Headings Extension'});
   palette.addItem({command:handleUpCmd,             category: 'Collapsible Headings Extension'});
   palette.addItem({command:handleDownCmd,           category: 'Collapsible Headings Extension'});
-
+  
   nbTrack.currentChanged.connect(()=>{
     nbTrack.currentWidget.content.model.stateChanged.connect(()=>{
       if (nbTrack.currentWidget.content.widgets.length > 1){
@@ -123,8 +123,18 @@ function activate (
     keys: ['J'],
     selector: '.jp-Notebook:focus'
   });}, 1000);
-  nbTrack.activeCellChanged.connect(() => {uncollapseParent(nbTrack.currentWidget.content.activeCellIndex, nbTrack)});
+  nbTrack.activeCellChanged.connect(() => {handleCellChange(nbTrack)});
 };
+
+function handleCellChange(nbTrack : INotebookTracker){
+  //let activeCell = nbTrack.currentWidget.content.activeCell;
+  uncollapseParent(nbTrack.currentWidget.content.activeCellIndex, nbTrack);
+  //if (getHeaderInfo(activeCell).isHeader && getCollapsedMetadata(activeCell)) {
+    // debugLog("Selecting a hidden cell...");
+    // nbTrack.currentWidget.content.select(nbTrack.currentWidget.content.widgets[nbTrack.currentWidget.content.activeCellIndex]);
+    // nbTrack.currentWidget.content.select(nbTrack.currentWidget.content.widgets[nbTrack.currentWidget.content.activeCellIndex+1]);
+  //}
+}
 
 function uncollapseParent(which : number, nbTrack : INotebookTracker){
   let nearestParentLoc = findNearestParentHeader(which, nbTrack);
@@ -152,6 +162,7 @@ function handleUp(nbTrack : INotebookTracker){
   if (nbTrack.currentWidget.content.activeCellIndex == 0){
     return;
   }
+  nbTrack.currentWidget.content.deselectAll()
   let newIndex = nbTrack.currentWidget.content.activeCellIndex - 1;
   let newPotentialActiveCell = nbTrack.currentWidget.content.widgets[newIndex];
   let isHidden = newPotentialActiveCell.isHidden;
@@ -174,6 +185,7 @@ function handleUp(nbTrack : INotebookTracker){
 
 function handleDown(nbTrack : INotebookTracker){
   debugLog('Handling Down Arrow!');
+  nbTrack.currentWidget.content.deselectAll()
   let newIndex = nbTrack.currentWidget.content.activeCellIndex + 1;
   if (newIndex >= nbTrack.currentWidget.content.widgets.length){
     return;
