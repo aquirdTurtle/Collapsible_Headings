@@ -1,70 +1,57 @@
 {
   "name": "@aquirdturtle/collapsible_headings",
-  "version": "3.0.0",
-  "description": "Make headings collapsible like the old Jupyter notebook extension and like e.g. mathematica notebooks.",
+  "version": "0.1.0",
+  "description": "Make headings collapsible like the old Jupyter notebook extension and like mathematica notebooks.",
   "keywords": [
     "jupyter",
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/aquirdTurtle/Collapsible_Headings",
+  "homepage": "https://github.com/aquirdTurtle/Collapsible_Headings.git",
   "bugs": {
-    "url": "https://github.com/aquirdTurtle/Collapsible_Headings/issues"
+    "url": "https://github.com/aquirdTurtle/Collapsible_Headings.git/issues"
   },
   "license": "BSD-3-Clause",
   "author": "Mark O Brown",
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
-    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
-    "schema/*.json",
-    "style/index.js"
+    "style/**/*.{css,.js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aquirdTurtle/Collapsible_Headings.git"
+    "url": "https://github.com/aquirdTurtle/Collapsible_Headings.git.git"
   },
   "scripts": {
     "build": "jlpm run build:lib && jlpm run build:labextension:dev",
+    "build:prod": "jlpm run build:lib && jlpm run build:labextension",
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
     "build:lib": "tsc",
-    "build:prod": "jlpm run build:lib && jlpm run build:labextension",
     "clean": "jlpm run clean:lib",
-    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
-    "clean:labextension": "rimraf aquirdturtle_collapsible_headings/labextension",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rimraf aquirdturtle_collapsible_headings/labextension",
+    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
     "install:extension": "jupyter labextension develop --overwrite .",
     "prepare": "jlpm run clean && jlpm run build:prod",
     "watch": "run-p watch:src watch:labextension",
-    "watch:labextension": "jupyter labextension watch .",
-    "watch:src": "tsc -w"
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyterlab/application": "^3.0.2",
-    "@jupyterlab/apputils": "^3.0.2",
-    "@jupyterlab/cells": "^3.0.2",
-    "@jupyterlab/docregistry": "^3.0.2",
-    "@jupyterlab/notebook": "^3.0.2",
-    "@jupyterlab/settingregistry": "^3.0.1",
-    "@lumino/coreutils": "^1.5.3",
-    "@lumino/disposable": "^1.4.3",
-    "@lumino/domutils": "^1.2.3",
-    "@lumino/messaging": "^1.4.3",
-    "@lumino/widgets": "^1.16.1",
-    "@phosphor/domutils": "^1.1.4"
+    "@jupyterlab/application": "^3.0.0-rc.13"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "^3.0.1",
+    "@jupyterlab/builder": "^3.0.0-rc.13",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
     "eslint": "^7.5.0",
     "eslint-config-prettier": "^6.10.1",
-    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-prettier": "^3.1.2", 
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.0",
     "rimraf": "^3.0.2",
@@ -74,10 +61,9 @@
     "style/*.css",
     "style/index.js"
   ],
-  "jupyterlab": {
+  "styleModule": "style/index.js",
+  "jupyterlab": { 
     "extension": true,
-    "schemaDir": "schema",
     "outputDir": "aquirdturtle_collapsible_headings/labextension"
-  },
-  "styleModule": "style/index.js"
+  }
 }

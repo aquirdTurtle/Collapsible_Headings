@@ -1,12 +1,15 @@
+@import url('base.css');
+
 .my-apodWidget {
-  display: flex;
-  flex-direction:column;
-  align-items: center;
-  overflow: auto;
-}
-
-
-:root{
-  --jp-myicon-caretdown: url('caretdown.svg');
-  --jp-myicon-caretright: url('caretright.svg');
-}
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+    overflow: auto;
+  }
+  
+  
+  :root{
+    --jp-myicon-caretdown: url('caretdown.svg');
+    --jp-myicon-caretright: url('caretright.svg');
+  }
+  

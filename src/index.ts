@@ -39,9 +39,10 @@ function activate (
   palette: ICommandPalette,
   settings: ISettingRegistry
 ){
-  settings.load(plugin.id).then(resSettings => debugLog('LOAD SETTINGS: ', resSettings));
-  debugLog('Collapsible_Headings Extension Active! TEST');
+  console.log('JupyterLab extension @aquirdturtle/collapsible_headings is activated!!');
 
+  settings.load(plugin.id).then(resSettings => debugLog('LOAD SETTINGS: ', resSettings));
+  
   const toggleCollapseCmd:        string = 'Collapsible_Headings:Toggle_Collapse';  
   const manuallyUpdateCmd:        string = 'Collapsible_Headings:Manually_Update_Collapse_Buttons';
   const manuallyUpdateStateCmd:   string = 'Collapsible_Headings:Manually_Update_Notebook_Collapse_State';
@@ -94,6 +95,7 @@ function activate (
     debugLog('Cell executed. Updating buttons.');
     updateButtons(nbTrack);
   })
+
   // for some reason if I don't do this with a timeout, setting these bindings seems to fail *sometimes* 
   // and the arrows invoke these commands
 
@@ -103,26 +105,26 @@ function activate (
     args: {},
     keys: ['ArrowUp'],
     selector: '.jp-Notebook:focus'
-  });}, 1000)
+  });}, 2000)
   setTimeout(()=>{ app.commands.addKeyBinding({
     command: handleUpCmd,
     args: {},
     keys: ['K'],
     selector: '.jp-Notebook:focus'
-  });}, 1000)
+  });}, 2000)
 
   setTimeout(()=>{ app.commands.addKeyBinding({
     command: handleDownCmd,
     args: {},
     keys: ['ArrowDown'],
     selector: '.jp-Notebook:focus'
-  });}, 1000);
+  });}, 2000);
   setTimeout(()=>{ app.commands.addKeyBinding({
     command: handleDownCmd,
     args: {},
     keys: ['J'],
     selector: '.jp-Notebook:focus'
-  });}, 1000);
+  });}, 2000);
   nbTrack.activeCellChanged.connect(() => {handleCellChange(nbTrack)});
 };
 
@@ -284,10 +286,10 @@ function findNextParentHeader(index : number, nbTrack : INotebookTracker){
     return -1;
   }
   let childHeaderInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[index]);
-  debugLog('child'+ childHeaderInfo)
+  //debugLog('child'+ childHeaderInfo)
   for (let cellN = index+1; cellN < nbTrack.currentWidget.content.widgets.length; cellN++ ){
     let hInfo = getHeaderInfo(nbTrack.currentWidget.content.widgets[cellN]);
-    debugLog(hInfo)
+    //debugLog(hInfo)
     if (hInfo.isHeader && hInfo.headerLevel <= childHeaderInfo.headerLevel ){
       return cellN;
     }
@@ -347,27 +349,31 @@ function updateButtons(nbTrack: INotebookTracker){
 }
 
 function setButtonIcon(button: HTMLElement, collapsed: boolean, headerLevel: number) {
-  debugLog('Adding Button!');
   if (collapsed) {
-    button.style.background = "var(--jp-myicon-caretright) no-repeat center";
+    // I used to use my own local files but for some reason this stopped working at jupyterlab 3.
+    button.style.background = "var(--jp-icon-caret-right) no-repeat center"
+    //button.style.background = "var(--jp-myicon-caretright) no-repeat center";
   } else {
-    button.style.background = "var(--jp-myicon-caretdown) no-repeat center";
+    button.style.background = "var(--jp-icon-caret-down) no-repeat center"
+    //button.style.background = "var(--jp-myicon-caretdown) no-repeat center";
   }
   // center the icons better.
   button.style.position = "relative";
+  button.style.backgroundSize = "30px 30px"
   // found this offset & multiplier by trial and error. There's probably a better way to do this.
   let offset = -15 + headerLevel * 4;
   button.style.bottom = offset.toString()+"px";
+  debugLog('Adding Button!', button);
 }
 
 function getOrCreateCollapseButton(cell: Cell, nbTrack: INotebookTracker) {
-  if (cell.promptNode.getElementsByClassName("toc-button").length == 0) {
+  if (cell.promptNode.getElementsByClassName("ch-button").length == 0) {
     let collapseButton = cell.promptNode.appendChild(document.createElement("button"));
-    collapseButton.className = "bp3-button bp3-minimal jp-Button minimal toc-button";
+    collapseButton.className = "bp3-button bp3-minimal jp-Button minimal ch-button";
     collapseButton.onclick = () => { toggleCurrentCellCollapse(nbTrack); };
     return collapseButton
   } else {
-    return cell.promptNode.getElementsByClassName("toc-button")[0];
+    return cell.promptNode.getElementsByClassName("ch-button")[0];
   }
 }
 
@@ -379,9 +385,9 @@ function addButton(cell: Cell, nbTrack: INotebookTracker) {
 };
 
 function removeButton(cell: Cell) {
-  if (cell.promptNode.getElementsByClassName("toc-button").length != 0){
+  if (cell.promptNode.getElementsByClassName("ch-button").length != 0){
     debugLog('Removing Button.')
-    cell.promptNode.removeChild(cell.promptNode.getElementsByClassName("toc-button")[0]);
+    cell.promptNode.removeChild(cell.promptNode.getElementsByClassName("ch-button")[0]);
   }
 }
 
@@ -394,11 +400,11 @@ function setCellCollapse(
     return which+1;
   }
   if (which >= nbTrack.currentWidget.content.widgets.length){
-    debugLog(which, 'tried to collapse non-existing cell!');
+    //debugLog(which, 'tried to collapse non-existing cell!');
   }
   let cell = nbTrack.currentWidget.content.widgets[which];
   if (!cell) {
-    debugLog(which, 'cell invalid?!');
+    //debugLog(which, 'cell invalid?!');
     return which+1;
   }
   let selectedHeaderInfo = getHeaderInfo(cell);
@@ -415,15 +421,15 @@ function setCellCollapse(
   if (cell.isHidden || !isMarkdown || !selectedHeaderInfo.isHeader){
     // otherwise collapsing and uncollapsing already hidden stuff can 
     // cause some funny looking bugs.
-    debugLog( which, 'cell hidden or not markdown or not a header markdown cell.', 
-              cell.isHidden, isMarkdown, selectedHeaderInfo.isHeader );
+    //debugLog( which, 'cell hidden or not markdown or not a header markdown cell.', 
+    //          cell.isHidden, isMarkdown, selectedHeaderInfo.isHeader );
     return which+1;
   }  
   setCollapsedMetadata(cell, collapsing);
   let button = getOrCreateCollapseButton(cell, nbTrack);
   let headerLevel = getHeaderInfo(cell).headerLevel;
   setButtonIcon(button as HTMLElement, collapsing, headerLevel);
-  debugLog(which, collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
+  //debugLog(which, collapsing ? "Collapsing cells." : "Uncollapsing Cells.");
   let localCollapsed = false;
   let localCollapsedLevel = 0;
   // iterate through all cells after the active cell.
@@ -441,7 +447,7 @@ function setCellCollapse(
     ){
       // then reached an equivalent or higher header level than the
       // original the end of the collapse.
-      debugLog(cellNum, 'Reached end of Collapse Section. Break.')
+      //debugLog(cellNum, 'Reached end of Collapse Section. Break.')
       cellNum -= 1;
       break;
     }
@@ -451,31 +457,30 @@ function setCellCollapse(
       && subCellHeaderInfo.headerLevel <= localCollapsedLevel
     ) {
       // then reached the end of the local collapsed, so unset this.
-      debugLog(cellNum, 'Reached End of local collapse.')
+      //debugLog(cellNum, 'Reached End of local collapse.')
       localCollapsed = false;
     }
     if (collapsing || localCollapsed) {
       // then no extra handling is needed for further locally collapsed
       // headers.
-      debugLog(cellNum, 'Collapsing Normally.');
+      //debugLog(cellNum, 'Collapsing Normally.');
       subCell.setHidden(true);
       continue;
     }
     if (getCollapsedMetadata(subCell) && subCellHeaderInfo.isHeader) {
-      debugLog(cellNum, 'Found locally collapsed section.');
+      //debugLog(cellNum, 'Found locally collapsed section.');
       localCollapsed = true;
       localCollapsedLevel = subCellHeaderInfo.headerLevel;
       // but don't collapse the locally collapsed header, so continue to
       // uncollapse the header. This will get noticed in the next round.
     }
-    debugLog(cellNum, 'Uncollapsing Normally.');
+    //debugLog(cellNum, 'Uncollapsing Normally.');
     subCell.setHidden(false);
   }
   return cellNum + 1;
 }
 
 function toggleCurrentCellCollapse(nbTrack: INotebookTracker) {
-  debugLog(nbTrack.activeCell)
   if (!nbTrack.activeCell) {
     return;
   }
