@@ -2,7 +2,7 @@ Arguments:
   C:\ProgramData\Miniconda3\envs\jupyterlab-ext\node.exe C:\ProgramData\Miniconda3\envs\jupyterlab-ext\lib\site-packages\jupyterlab\staging\yarn.js run clean:lib
 
 PATH: 
-  C:\Users\MARKO~1.BRO\AppData\Local\Temp\yarn--1610324631556-0.11046686854100041;C:\Users\Mark O. Brown\Code\Collapsible_Headings\node_modules\.bin;C:\Users\Mark O. Brown\AppData\Local\Yarn\Data\link\node_modules\.bin;C:\ProgramData\Miniconda3\envs\libexec\lib\node_modules\npm\bin\node-gyp-bin;C:\ProgramData\Miniconda3\envs\lib\node_modules\npm\bin\node-gyp-bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\node_modules\npm\bin\node-gyp-bin;C:\Users\Mark O. Brown\Code\Collapsible_Headings\node_modules\.bin;C:\Users\Mark O. Brown\Code\node_modules\.bin;C:\Users\Mark O. Brown\node_modules\.bin;C:\Users\node_modules\.bin;C:\node_modules\.bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\node_modules\npm\node_modules\@npmcli\run-script\lib\node-gyp-bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Library\mingw-w64\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Library\usr\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Library\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Scripts;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\bin;C:\ProgramData\Miniconda3\condabin;C:\ProgramData\Miniconda3;C:\ProgramData\Miniconda3\Library\mingw-w64\bin;C:\ProgramData\Miniconda3\Library\usr\bin;C:\ProgramData\Miniconda3\Library\bin;C:\ProgramData\Miniconda3\Scripts;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files\Git\cmd;C:\Users\Mark O. Brown\AppData\Local\Microsoft\WindowsApps;C:\ProgramData\Microsoft VS Code\bin
+  C:\Users\MARKO~1.BRO\AppData\Local\Temp\yarn--1610335701293-0.9147112711833498;C:\Users\Mark O. Brown\Code\Collapsible_Headings\node_modules\.bin;C:\Users\Mark O. Brown\AppData\Local\Yarn\Data\link\node_modules\.bin;C:\ProgramData\Miniconda3\envs\libexec\lib\node_modules\npm\bin\node-gyp-bin;C:\ProgramData\Miniconda3\envs\lib\node_modules\npm\bin\node-gyp-bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\node_modules\npm\bin\node-gyp-bin;C:\Users\Mark O. Brown\Code\Collapsible_Headings\node_modules\.bin;C:\Users\Mark O. Brown\Code\node_modules\.bin;C:\Users\Mark O. Brown\node_modules\.bin;C:\Users\node_modules\.bin;C:\node_modules\.bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\node_modules\npm\node_modules\@npmcli\run-script\lib\node-gyp-bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Library\mingw-w64\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Library\usr\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Library\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Scripts;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\bin;C:\ProgramData\Miniconda3\condabin;C:\ProgramData\Miniconda3;C:\ProgramData\Miniconda3\Library\mingw-w64\bin;C:\ProgramData\Miniconda3\Library\usr\bin;C:\ProgramData\Miniconda3\Library\bin;C:\ProgramData\Miniconda3\Scripts;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files\Git\cmd;C:\Users\Mark O. Brown\AppData\Local\Microsoft\WindowsApps;C:\ProgramData\Microsoft VS Code\bin
 
 Yarn version: 
   1.21.1
@@ -84,7 +84,8 @@ npm manifest:
       "@lumino/disposable": "^1.4.3",
       "@lumino/domutils": "^1.2.3",
       "@lumino/messaging": "^1.4.3",
-      "@lumino/widgets": "^1.16.1"
+      "@lumino/widgets": "^1.16.1",
+      "@phosphor/domutils": "^1.1.4"
     },
     "devDependencies": {
       "@jupyterlab/builder": "^3.0.1",
@@ -807,6 +808,11 @@ Lockfile:
     integrity sha512-Uv6h1sT+0DrblvIrolFtbvM1FgWm+/sy4B3pvLp67Zys+thcukzS5ekn7HsZFGpWP4Q3fYJCljbWQE/XivMRLw==
     dependencies:
       mkdirp "^1.0.4"
+  
+  "@phosphor/domutils@^1.1.4":
+    version "1.1.4"
+    resolved "https://registry.yarnpkg.com/@phosphor/domutils/-/domutils-1.1.4.tgz#4c6aecf7902d3793b45db325319340e0a0b5543b"
+    integrity sha512-ivwq5TWjQpKcHKXO8PrMl+/cKqbgxPClPiCKc1gwbMd+6hnW5VLwNG0WBzJTxCzXK43HxX18oH+tOZ3E04wc3w==
   
   "@sindresorhus/is@^0.14.0":
     version "0.14.0"
