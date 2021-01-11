@@ -1,8 +1,8 @@
 Arguments: 
-  C:\ProgramData\Miniconda3\envs\jupyterlab-ext\node.exe C:\ProgramData\Miniconda3\envs\jupyterlab-ext\lib\site-packages\jupyterlab\staging\yarn.js run clean:lib
+  C:\ProgramData\Miniconda3\node.exe c:\programdata\miniconda3\envs\jupyterlab-ch-pipr\lib\site-packages\jupyterlab\staging\yarn.js run clean:lib
 
 PATH: 
-  C:\Users\MARKO~1.BRO\AppData\Local\Temp\yarn--1610340871994-0.6944839317186136;C:\Users\Mark O. Brown\Code\Collapsible_Headings\node_modules\.bin;C:\Users\Mark O. Brown\AppData\Local\Yarn\Data\link\node_modules\.bin;C:\ProgramData\Miniconda3\envs\libexec\lib\node_modules\npm\bin\node-gyp-bin;C:\ProgramData\Miniconda3\envs\lib\node_modules\npm\bin\node-gyp-bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\node_modules\npm\bin\node-gyp-bin;C:\Users\Mark O. Brown\Code\Collapsible_Headings\node_modules\.bin;C:\Users\Mark O. Brown\Code\node_modules\.bin;C:\Users\Mark O. Brown\node_modules\.bin;C:\Users\node_modules\.bin;C:\node_modules\.bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\node_modules\npm\node_modules\@npmcli\run-script\lib\node-gyp-bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Library\mingw-w64\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Library\usr\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Library\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\Scripts;C:\ProgramData\Miniconda3\envs\jupyterlab-ext\bin;C:\ProgramData\Miniconda3\condabin;C:\ProgramData\Miniconda3;C:\ProgramData\Miniconda3\Library\mingw-w64\bin;C:\ProgramData\Miniconda3\Library\usr\bin;C:\ProgramData\Miniconda3\Library\bin;C:\ProgramData\Miniconda3\Scripts;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files\Git\cmd;C:\Users\Mark O. Brown\AppData\Local\Microsoft\WindowsApps;C:\ProgramData\Microsoft VS Code\bin
+  C:\Users\MARKO~1.BRO\AppData\Local\Temp\yarn--1610343807996-0.8073877308589243;C:\Users\Mark O. Brown\Code\Collapsible_Headings\node_modules\.bin;C:\Users\Mark O. Brown\AppData\Local\Yarn\Data\link\node_modules\.bin;C:\ProgramData\Miniconda3\bin;C:\ProgramData\libexec\lib\node_modules\npm\bin\node-gyp-bin;C:\ProgramData\lib\node_modules\npm\bin\node-gyp-bin;C:\ProgramData\Miniconda3\node_modules\npm\bin\node-gyp-bin;C:\Users\Mark O. Brown\Code\Collapsible_Headings\node_modules\.bin;C:\Users\Mark O. Brown\Code\node_modules\.bin;C:\Users\Mark O. Brown\node_modules\.bin;C:\Users\node_modules\.bin;C:\node_modules\.bin;C:\ProgramData\Miniconda3\node_modules\npm\node_modules\@npmcli\run-script\lib\node-gyp-bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ch-pipr;C:\ProgramData\Miniconda3\envs\jupyterlab-ch-pipr\Library\mingw-w64\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ch-pipr\Library\usr\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ch-pipr\Library\bin;C:\ProgramData\Miniconda3\envs\jupyterlab-ch-pipr\Scripts;C:\ProgramData\Miniconda3\envs\jupyterlab-ch-pipr\bin;C:\ProgramData\Miniconda3\condabin;C:\ProgramData\Miniconda3;C:\ProgramData\Miniconda3\Library\mingw-w64\bin;C:\ProgramData\Miniconda3\Library\usr\bin;C:\ProgramData\Miniconda3\Library\bin;C:\ProgramData\Miniconda3\Scripts;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files\Git\cmd;C:\Users\Mark O. Brown\AppData\Local\Microsoft\WindowsApps;C:\ProgramData\Microsoft VS Code\bin
 
 Yarn version: 
   1.21.1
@@ -15,21 +15,21 @@ Platform:
 
 Trace: 
   TypeError: Cannot create property 'module' on string '{"module":"C:\\Users\\Mark O. Brown\\.npm-init.js"}'
-      at set (C:\ProgramData\Miniconda3\envs\jupyterlab-ext\lib\site-packages\jupyterlab\staging\yarn.js:66427:28)
-      at set (C:\ProgramData\Miniconda3\envs\jupyterlab-ext\lib\site-packages\jupyterlab\staging\yarn.js:66441:14)
-      at set (C:\ProgramData\Miniconda3\envs\jupyterlab-ext\lib\site-packages\jupyterlab\staging\yarn.js:66421:16)
-      at Function.objectPath.set (C:\ProgramData\Miniconda3\envs\jupyterlab-ext\lib\site-packages\jupyterlab\staging\yarn.js:66474:14)
-      at NpmRegistry.mergeEnv (C:\ProgramData\Miniconda3\envs\jupyterlab-ext\lib\site-packages\jupyterlab\staging\yarn.js:103389:18)
-      at C:\ProgramData\Miniconda3\envs\jupyterlab-ext\lib\site-packages\jupyterlab\staging\yarn.js:32992:14
+      at set (c:\programdata\miniconda3\envs\jupyterlab-ch-pipr\lib\site-packages\jupyterlab\staging\yarn.js:66427:28)
+      at set (c:\programdata\miniconda3\envs\jupyterlab-ch-pipr\lib\site-packages\jupyterlab\staging\yarn.js:66441:14)
+      at set (c:\programdata\miniconda3\envs\jupyterlab-ch-pipr\lib\site-packages\jupyterlab\staging\yarn.js:66421:16)
+      at Function.objectPath.set (c:\programdata\miniconda3\envs\jupyterlab-ch-pipr\lib\site-packages\jupyterlab\staging\yarn.js:66474:14)
+      at NpmRegistry.mergeEnv (c:\programdata\miniconda3\envs\jupyterlab-ch-pipr\lib\site-packages\jupyterlab\staging\yarn.js:103389:18)
+      at c:\programdata\miniconda3\envs\jupyterlab-ch-pipr\lib\site-packages\jupyterlab\staging\yarn.js:32992:14
       at Generator.next (<anonymous>)
-      at step (C:\ProgramData\Miniconda3\envs\jupyterlab-ext\lib\site-packages\jupyterlab\staging\yarn.js:310:30)
-      at C:\ProgramData\Miniconda3\envs\jupyterlab-ext\lib\site-packages\jupyterlab\staging\yarn.js:328:14
+      at step (c:\programdata\miniconda3\envs\jupyterlab-ch-pipr\lib\site-packages\jupyterlab\staging\yarn.js:310:30)
+      at c:\programdata\miniconda3\envs\jupyterlab-ch-pipr\lib\site-packages\jupyterlab\staging\yarn.js:328:14
       at new Promise (<anonymous>)
 
 npm manifest: 
   {
     "name": "@aquirdturtle/collapsible_headings",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "description": "Make headings collapsible like the old Jupyter notebook extension and like e.g. mathematica notebooks.",
     "keywords": [
       "jupyter",
