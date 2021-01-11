@@ -1,6 +1,6 @@
 {
   "name": "@aquirdturtle/collapsible_headings",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Make headings collapsible like the old Jupyter notebook extension and like e.g. mathematica notebooks.",
   "keywords": [
     "jupyter",

@@ -23,10 +23,10 @@ All shortcuts only work in command mode and are editable by the user by going to
 
 ## Install
 
-Installation through pip or conda is *not yet supported*. It should be possible to update to the newest 3.0 version using the jupyterlab package manager, which is drawing from my updated npm package. I will work in the future to make it possible to install via pip or conda.
+You should be able to install the extension either using the jupyterlab extension manager (drawing from my npm repository) or by using pip, which draws from pypi. Both should be update to date. Conda not yet supported.
 
 ```bash
-# pip install aquirdturtle_collapsible_headings
+pip install aquirdturtle_collapsible_headings
 ```
 
 ## Contributing
