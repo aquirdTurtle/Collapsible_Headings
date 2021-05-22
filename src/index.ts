@@ -19,9 +19,11 @@ import { ElementExt } from '@phosphor/domutils';
 
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
+import { ITableOfContentsRegistry } from '@jupyterlab/toc';
+
 const plugin: JupyterFrontEndPlugin<void> = {
   activate,
-  requires: [INotebookTracker, ICommandPalette, ISettingRegistry],
+  requires: [INotebookTracker, ICommandPalette, ISettingRegistry, ITableOfContentsRegistry],
   id: '@aquirdturtle/collapsible_headings:plugin',
   autoStart: true
 };
@@ -37,7 +39,8 @@ function activate (
   app: JupyterFrontEnd,
   nbTrack: INotebookTracker,
   palette: ICommandPalette,
-  settings: ISettingRegistry
+  settings: ISettingRegistry,
+  toc_registry: ITableOfContentsRegistry
 ){
   console.log('JupyterLab extension @aquirdturtle/collapsible_headings is activated!!');
 
@@ -78,10 +81,10 @@ function activate (
   palette.addItem({command:collapseCmd,             category: 'Collapsible Headings Extension'});
   palette.addItem({command:handleUpCmd,             category: 'Collapsible Headings Extension'});
   palette.addItem({command:handleDownCmd,           category: 'Collapsible Headings Extension'});
-  
-  nbTrack.currentChanged.connect(()=>{
-    nbTrack.currentWidget.content.model.stateChanged.connect(()=>{
-      if (nbTrack.currentWidget.content.widgets.length > 1){
+
+  nbTrack.currentChanged.connect(() => {
+    nbTrack.currentWidget.content.model.stateChanged.connect(() => {
+      if (nbTrack.currentWidget.content.widgets.length > 1) {
         // this is a signal that I found that gets called after the cell list has been populated, so possible
         // to initialize these things now.
         updateButtons(nbTrack);
@@ -126,7 +129,10 @@ function activate (
     selector: '.jp-Notebook:focus'
   });}, 2000);
   nbTrack.activeCellChanged.connect(() => {handleCellChange(nbTrack)});
-};
+  toc_registry.collapseChanged.connect(() => {
+      setTimeout(()=>{updateNotebookCollapsedState(nbTrack)},10);
+  });
+  };
 
 function handleCellChange(nbTrack : INotebookTracker){
   //let activeCell = nbTrack.currentWidget.content.activeCell;
@@ -475,6 +481,11 @@ function setCellCollapse(
       // uncollapse the header. This will get noticed in the next round.
     }
     //debugLog(cellNum, 'Uncollapsing Normally.');
+    if (subCellHeaderInfo.isHeader) {
+      let button = getOrCreateCollapseButton(subCell, nbTrack);
+      setButtonIcon(button as HTMLElement, localCollapsed, localCollapsedLevel)
+      // update button on header to reflect collapsed state if collapsed from toc
+    }
     subCell.setHidden(false);
   }
   return cellNum + 1;
@@ -555,14 +566,8 @@ function uncollapseCell(nbTrack: INotebookTracker) {
 function getCollapsedMetadata(cell: Cell) : boolean {
   let metadata = cell.model.metadata;
   let collapsedData = false;
-  // handle old metadata.
-  if (metadata.has("Collapsed"))
-  {
-    metadata.set("heading_collapsed", metadata.get('Collapsed'))
-    metadata.delete("Collapsed");
-  }
-  if (metadata.has('heading_collapsed')){
-    collapsedData = metadata.get('heading_collapsed') === 'true' ? true : false;
+  if (metadata.has('toc-hr-collapsed')) {
+    collapsedData = metadata.get('toc-hr-collapsed') === true;
   } else {
     // default is false, not collapsed.
   }
@@ -571,13 +576,11 @@ function getCollapsedMetadata(cell: Cell) : boolean {
 
 function setCollapsedMetadata(cell: Cell, data: boolean) {
   let metadata = cell.model.metadata;
-  if (data)
-  {
-    metadata.set('heading_collapsed', 'true');  
+  if (data) {
+    metadata.set('toc-hr-collapsed', true);
   }
-  else
-  {
-    metadata.delete("heading_collapsed");
+  else {
+    metadata.delete("toc-hr-collapsed");
   }
 }
 
