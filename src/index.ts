@@ -34,12 +34,8 @@ function activate(
   settings: ISettingRegistry
 ) {
   console.log(
-    'JupyterLab extension @aquirdturtle/collapsible_headings is activated!!'
+    'JupyterLab extension @aquirdturtle/collapsible_headings is activated!'
   );
-
-  settings
-    .load(plugin.id)
-    .then(resSettings => debugLog('LOAD SETTINGS: ', resSettings));
 
   const toggleCollapseCmd: string = 'Collapsible_Headings:Toggle_Collapse';
   const manuallyUpdateCmd: string =
@@ -55,117 +51,156 @@ function activate(
   const handleUpCmd: string = 'Collapsible_Headings:HandleUp';
   const handleDownCmd: string = 'Collapsible_Headings:HandleDown';
 
-  app.commands.addCommand(toggleCollapseCmd, {
-    label: 'Toggle Collapse',
-    execute: () => {
-      toggleCurrentCellCollapse(nbTrack);
-    }
-  });
-  app.commands.addCommand(manuallyUpdateCmd, {
-    label: 'Refresh Collapse Buttons',
-    execute: () => {
-      updateButtons(nbTrack);
-    }
-  });
-  app.commands.addCommand(manuallyUpdateStateCmd, {
-    label: 'Refresh Notebook Collapse State',
-    execute: () => {
-      updateNotebookCollapsedState(nbTrack);
-    }
-  });
-  app.commands.addCommand(collapseAllCmd, {
-    label: 'Collapse All Cells',
-    execute: () => {
-      collapseAll(nbTrack);
-    }
-  });
-  app.commands.addCommand(uncollapseAllCmd, {
-    execute: () => {
-      uncollapseAll(nbTrack);
-    }
-  });
-  app.commands.addCommand(addHeaderAboveCmd, {
-    label: 'Add Header Above',
-    execute: () => {
-      addHeaderAbove(nbTrack);
-    }
-  });
-  app.commands.addCommand(addHeaderBelowCmd, {
-    label: 'Add Header Below',
-    execute: () => {
-      addHeaderBelow(nbTrack);
-    }
-  });
-  app.commands.addCommand(uncollapseHeaderCmd, {
-    label: 'Un-Collapse Header',
-    execute: () => {
-      uncollapseCell(nbTrack);
-    }
-  });
-  app.commands.addCommand(collapseCmd, {
-    label: 'Collapse Header',
-    execute: () => {
-      collapseCell(nbTrack);
-    }
-  });
-  app.commands.addCommand(handleUpCmd, {
-    label: 'Handle Up Arrow',
-    execute: () => {
-      handleUp(nbTrack);
-    }
-  });
-  app.commands.addCommand(handleDownCmd, {
-    label: 'Handle Down Arrow',
-    execute: () => {
-      handleDown(nbTrack);
-    }
-  });
+  // this took some digging to figure out but apparently you need to wait for the settings
+  //  to load and the app to be restored before adding key bindings. gah. 
+  Promise.all([settings.load(plugin.id), app.restored])
+  .then(resSettings => {  
+    const onSettingsUpdated = (settings: ISettingRegistry.ISettings) => {
+      debugLog('LOAD SETTINGS: ', resSettings)
 
-  palette.addItem({
-    command: toggleCollapseCmd,
-    category: 'Collapsible Headings Extension'
-  });
-  palette.addItem({
-    command: manuallyUpdateCmd,
-    category: 'Collapsible Headings Extension'
-  });
-  palette.addItem({
-    command: manuallyUpdateStateCmd,
-    category: 'Collapsible Headings Extension'
-  });
-  palette.addItem({
-    command: collapseAllCmd,
-    category: 'Collapsible Headings Extension'
-  });
-  palette.addItem({
-    command: uncollapseAllCmd,
-    category: 'Collapsible Headings Extension'
-  });
-  palette.addItem({
-    command: addHeaderAboveCmd,
-    category: 'Collapsible Headings Extension'
-  });
-  palette.addItem({
-    command: addHeaderBelowCmd,
-    category: 'Collapsible Headings Extension'
-  });
-  palette.addItem({
-    command: uncollapseHeaderCmd,
-    category: 'Collapsible Headings Extension'
-  });
-  palette.addItem({
-    command: collapseCmd,
-    category: 'Collapsible Headings Extension'
-  });
-  palette.addItem({
-    command: handleUpCmd,
-    category: 'Collapsible Headings Extension'
-  });
-  palette.addItem({
-    command: handleDownCmd,
-    category: 'Collapsible Headings Extension'
-  });
+      app.commands.addCommand(toggleCollapseCmd, {
+        label: 'Toggle Collapse',
+        execute: () => {
+          toggleCurrentCellCollapse(nbTrack);
+        }
+      });
+      app.commands.addCommand(manuallyUpdateCmd, {
+        label: 'Refresh Collapse Buttons',
+        execute: () => {
+          updateButtons(nbTrack);
+        }
+      });
+      app.commands.addCommand(manuallyUpdateStateCmd, {
+        label: 'Refresh Notebook Collapse State',
+        execute: () => {
+          updateNotebookCollapsedState(nbTrack);
+        }
+      });
+      app.commands.addCommand(collapseAllCmd, {
+        label: 'Collapse All Cells',
+        execute: () => {
+          collapseAll(nbTrack);
+        }
+      });
+      app.commands.addCommand(uncollapseAllCmd, {
+        execute: () => {
+          uncollapseAll(nbTrack);
+        }
+      });
+      app.commands.addCommand(addHeaderAboveCmd, {
+        label: 'Add Header Above',
+        execute: () => {
+          addHeaderAbove(nbTrack);
+        }
+      });
+      app.commands.addCommand(addHeaderBelowCmd, {
+        label: 'Add Header Below',
+        execute: () => {
+          addHeaderBelow(nbTrack);
+        }
+      });
+      app.commands.addCommand(uncollapseHeaderCmd, {
+        label: 'Un-Collapse Header',
+        execute: () => {
+          uncollapseCell(nbTrack);
+        }
+      });
+      app.commands.addCommand(collapseCmd, {
+        label: 'Collapse Header',
+        execute: () => {
+          collapseCell(nbTrack);
+        }
+      });
+      app.commands.addCommand(handleUpCmd, {
+        label: 'Handle Up Arrow',
+        execute: () => {
+          handleUp(nbTrack);
+        }
+      });
+      app.commands.addCommand(handleDownCmd, {
+        label: 'Handle Down Arrow',
+        execute: () => {
+          handleDown(nbTrack);
+        }
+      });
+    
+      palette.addItem({
+        command: toggleCollapseCmd,
+        category: 'Collapsible Headings Extension'
+      });
+      palette.addItem({
+        command: manuallyUpdateCmd,
+        category: 'Collapsible Headings Extension'
+      });
+      palette.addItem({
+        command: manuallyUpdateStateCmd,
+        category: 'Collapsible Headings Extension'
+      });
+      palette.addItem({
+        command: collapseAllCmd,
+        category: 'Collapsible Headings Extension'
+      });
+      palette.addItem({
+        command: uncollapseAllCmd,
+        category: 'Collapsible Headings Extension'
+      });
+      palette.addItem({
+        command: addHeaderAboveCmd,
+        category: 'Collapsible Headings Extension'
+      });
+      palette.addItem({
+        command: addHeaderBelowCmd,
+        category: 'Collapsible Headings Extension'
+      });
+      palette.addItem({
+        command: uncollapseHeaderCmd,
+        category: 'Collapsible Headings Extension'
+      });
+      palette.addItem({
+        command: collapseCmd,
+        category: 'Collapsible Headings Extension'
+      });
+      palette.addItem({
+        command: handleUpCmd,
+        category: 'Collapsible Headings Extension'
+      });
+      palette.addItem({
+        command: handleDownCmd,
+        category: 'Collapsible Headings Extension'
+      });
 
+      app.commands.addKeyBinding({
+        command: handleUpCmd,
+        args: {},
+        keys: ['ArrowUp'],
+        selector: '.jp-Notebook:focus'
+      });
+      app.commands.addKeyBinding({
+        command: handleUpCmd,
+        args: {},
+        keys: ['K'],
+        selector: '.jp-Notebook:focus'
+      });
+      app.commands.addKeyBinding({
+        command: handleDownCmd,
+        args: {},
+        keys: ['ArrowDown'],
+        selector: '.jp-Notebook:focus'
+      });
+      app.commands.addKeyBinding({
+        command: handleDownCmd,
+        args: {},
+        keys: ['J'],
+        selector: '.jp-Notebook:focus'
+      });
+    };
+    resSettings[0].changed.connect(onSettingsUpdated);
+    onSettingsUpdated(resSettings[0]);
+    })
+    .catch((reason: Error) => {
+      console.error(reason.message);
+    });
+    
   nbTrack.currentChanged.connect(() => {
     nbTrack.currentWidget.content.model.stateChanged.connect(() => {
       if (nbTrack.currentWidget.content.widgets.length > 1) {
@@ -188,40 +223,41 @@ function activate(
   // for some reason if I don't do this with a timeout, setting these bindings seems to fail *sometimes*
   // and the arrows invoke these commands
 
-  // I believe these bindings being here just makes them non-optional.
-  setTimeout(() => {
-    app.commands.addKeyBinding({
-      command: handleUpCmd,
-      args: {},
-      keys: ['ArrowUp'],
-      selector: '.jp-Notebook:focus'
-    });
-  }, 2000);
-  setTimeout(() => {
-    app.commands.addKeyBinding({
-      command: handleUpCmd,
-      args: {},
-      keys: ['K'],
-      selector: '.jp-Notebook:focus'
-    });
-  }, 2000);
+  // // Putting these bindings here just makes them non-optional.
 
-  setTimeout(() => {
-    app.commands.addKeyBinding({
-      command: handleDownCmd,
-      args: {},
-      keys: ['ArrowDown'],
-      selector: '.jp-Notebook:focus'
-    });
-  }, 2000);
-  setTimeout(() => {
-    app.commands.addKeyBinding({
-      command: handleDownCmd,
-      args: {},
-      keys: ['J'],
-      selector: '.jp-Notebook:focus'
-    });
-  }, 2000);
+  // setTimeout(() => {
+  //   app.commands.addKeyBinding({
+  //     command: handleUpCmd,
+  //     args: {},
+  //     keys: ['ArrowUp'],
+  //     selector: '.jp-Notebook:focus'
+  //   });
+  // }, 2000);
+  // setTimeout(() => {
+  //   app.commands.addKeyBinding({
+  //     command: handleUpCmd,
+  //     args: {},
+  //     keys: ['K'],
+  //     selector: '.jp-Notebook:focus'
+  //   });
+  // }, 2000);
+
+  // setTimeout(() => {
+  //   app.commands.addKeyBinding({
+  //     command: handleDownCmd,
+  //     args: {},
+  //     keys: ['ArrowDown'],
+  //     selector: '.jp-Notebook:focus'
+  //   });
+  // }, 2000);
+  // setTimeout(() => {
+  //   app.commands.addKeyBinding({
+  //     command: handleDownCmd,
+  //     args: {},
+  //     keys: ['J'],
+  //     selector: '.jp-Notebook:focus'
+  //   });
+  // }, 2000);
   nbTrack.activeCellChanged.connect(() => {
     handleCellChange(nbTrack);
   });

@@ -1977,7 +1977,7 @@
         "affectsGlobalScope": false
       },
       "./src/index.ts": {
-        "version": "fbbe6f7f3a37913b964db83cb9fefcbc35c2370306d826687101b33a91054a3c",
+        "version": "247657d66d44a588a477e02c64b60b9a75e950341ee360704a78b2735dc4f74d",
         "signature": "527fc3aa988fa86a79e1b55d82a6e6df92075a06286489b0ea7a84cae1c2beb0",
         "affectsGlobalScope": false
       }

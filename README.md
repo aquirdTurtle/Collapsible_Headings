@@ -1,7 +1,5 @@
 # aquirdturtle_collapsible_headings
 
-![Github Actions Status](https://github.com/aquirdTurtle/Collapsible_Headings.git/workflows/Build/badge.svg)
-
 Make headings collapsible like the old Jupyter notebook extension and like Mathematica notebooks.
 
 A selected header cell (i.e. markdown cell starting with some number of "#") can be collapsed / uncollapsed by clicking on the caret icon created to the left of header cells or by using a shortcut.
